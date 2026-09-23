@@ -4,9 +4,9 @@ Starter template for the **Development of AI Applications** course final group p
 
 ## Team members
 
-- Member 1 Name (email@example.com)
-- Member 2 Name (email@example.com)
-- Member 3 Name (email@example.com)
+- Member 1 Eetu Huotari (eetuh25@gmail.com)
+- Member 2 Fei Raita (fei.raita@hotmail.com)
+- Member 3 Lauri Raatikainen (lauri@raatikainen.fi)
 
 ## Problem
 
