@@ -1,4 +1,4 @@
-# Project name
+# Turbo super study helper tm
 
 Starter template for the **Development of AI Applications** course final group project.
 
@@ -10,24 +10,31 @@ Starter template for the **Development of AI Applications** course final group p
 
 ## Problem
 
+<img width="1272" height="655" alt="image" src="https://github.com/user-attachments/assets/d2fd0ed7-1622-4496-9b8d-a0fd6205eb97" />
+
+Learning a difficult subject usually requires prior knowledge from several different areas. To learn X, you need to know Y and Z, and those have their own prerequisites. A teacher acts as an interface to that knowledge, but when teaching many students, each student has different knowledge gaps. To fill them, students have to search for information from different sources and teachers, which takes time and effort that could be spent on actually studying.
+
+Our idea is an AI that you tell what you want to learn. It asks questions about closely related prerequisite knowledge to assess your level, then creates study material and quizzes for the knowledge you're missing. In the picture, red nodes are what you don't know and green nodes are what you know. The top node is your learning goal, which the gaps below it are preventing you from reaching.
+
+We will start with logic-based subjects such as coding and math.
+
+**TL;DR:** An AI that creates study material for you based on your missing knowledge.
+
 ### Intended users
-Who are the primary target users of this application?
+
+Students and anyone who wants to learn a new subject.
 
 ### Problem statement
-What specific problem does this application solve for those users?
+
+Difficult subjects require prior knowledge from many areas, and every student has different gaps. A teacher can't adapt to all of them, so students waste time searching for material and teachers instead of actually learning.
 
 ### Why AI is appropriate
-Why does this problem require AI / LLM capabilities rather than traditional deterministic software?
+
+Traditional, deterministic software can't take a request like "I want to learn X," find relevant study material, and turn it into a personalized study plan and quizzes.
 
 ## Solution
 
-Briefly describe your application, its primary value proposition, and how it addresses the problem statement above.
-
-## Main user workflow
-
-1. **User Input:** The user submits a prompt or query via the Gradio user interface.
-2. **Processing & Guardrails:** The application service layer (`src/services/ai_service.py`) validates and formats the request.
-3. **Model Response:** The model client calls Ollama locally and returns the response back through the service layer to the UI.
+Our AI study assistant lets you focus on learning instead of searching for what to learn, where, from whom, and how. You tell it your goal, it finds your knowledge gaps, gathers study material, and turns it into a step-by-step plan with quizzes.
 
 ## Architecture
 
