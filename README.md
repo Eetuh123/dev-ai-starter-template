@@ -42,14 +42,14 @@ Below is the initial starter architecture. As your project evolves with addition
 
 ```text
 User
-  ↓
-Gradio UI (app/ui.py)
-  ↓
-Application / AI Service (src/services/ai_service.py)
-  ↓
-Model Client (src/models/model_client.py)
-  ↓
-Ollama (Local LLM Server)
+     ↓
+   Gradio UI (app/ui.py)
+     ↓
+   AI Service (src/services/ai_service.py)
+     ├─→ Retriever (RAG: source documents)
+     ├─→ Memory (user knowledge map + quiz results)
+     ├─→ Model Client → Ollama (local LLM, generates material)
+     └─→ Verification Client → External API (e.g. Claude, fact-check)
 ```
 
 > **Core Architectural Rule:** The user interface must NEVER communicate directly with the model client or Ollama. All interactions must pass through the service layer (`ai_service.py`).
