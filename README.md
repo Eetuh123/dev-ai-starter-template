@@ -56,23 +56,27 @@ Ollama (Local LLM Server)
 
 ## Model
 
-- **Model used:** e.g., `llama3.2` (or specified local Ollama model)
-- **Selection rationale:** Why was this specific model chosen for your project (e.g., lightweight, performance, context size)?
+- Model used: llama3.2 (3B) via Ollama
+- Selection rationale: It is lightweight enough to run locally on normal student laptops, which keeps the app free and private. It is good enough for generating explanations and quiz questions from provided material. If quality is not sufficient, we will test a larger model such as qwen2.5:7b and compare results in our evaluation.
 
 ## Additional AI capability
 
 Select at least one additional capability to implement for your final project:
 
-- [ ] RAG (Retrieval-Augmented Generation)
-- [ ] Tools / External API integration
+- [x] RAG (Retrieval-Augmented Generation)
+- [x] Tools / External API integration
 - [ ] Model Context Protocol (MCP)
 - [ ] Agentic workflow (Model-selected actions based on observations)
-- [ ] Memory / Persistent state
+- [x] Memory / Persistent state
 - [ ] Multimodal interaction (Text + Images)
 - [ ] Other: ______________________
 
 ### Capability justification
-Explain why the selected capability is useful and necessary for your application's user problem.
+RAG: A small local model can produce incorrect or made-up explanations, which is a serious problem in a study tool. With RAG, study material and quizzes are generated from retrieved source documents (e.g. course material or open textbooks) instead of the model's own memory, and every piece of material can show its source. This makes the content more reliable and checkable.
+
+Memory: The core idea of the app is to know what the user already knows and what they are missing. Persistent state stores the user's knowledge map (known and missing prerequisite topics) and quiz results between sessions, so the assistant does not have to re-test the user every time and can continue from their current gaps.
+
+Verification step: After the local model generates study material and quizzes, the content is sent to a more capable external model (e.g. Claude via API) that fact-checks it against the retrieved sources and flags or corrects errors before the material is shown to the user. This combines the low cost and privacy of a local model with the accuracy of a stronger model, which is important because incorrect study material would teach the user wrong things.
 
 ## Setup
 
