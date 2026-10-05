@@ -1,3 +1,11 @@
+from src.schemas.study import ConceptProgress
+
+def load_progress() -> dict[str, ConceptProgress]:
+   return {}
+
+def save_progress(progress: dict[str, ConceptProgress]) -> None:
+   pass
+
 """
 Optional project capability: Memory & Persistent Conversation State.
 

@@ -12,7 +12,7 @@ class Config:
 
     ollama_base_url: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
     model_name: str = os.getenv("MODEL_NAME", "llama3.2")
-
+    concept_map_path: str = os.getenv("CONCEPT_MAP_PATH","data/conceptsMockup.json")
 
 # Instantiate global configuration object
 config = Config()

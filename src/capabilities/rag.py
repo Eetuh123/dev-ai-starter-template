@@ -1,3 +1,24 @@
+import json
+from src.config import config
+from src.schemas.study import Concept, RagChunk
+
+def retrieve(concept_id: str) -> list[RagChunk]:
+    return [
+        RagChunk(
+            id="fake-1",
+            concept_id=concept_id,
+            text="The chain rule says (f(g(x)))' = f'(g(x)) * g'(x).",
+            book="Calculus Vol. 1",
+            section="3.6 The Chain Rule",
+            score=0.9,
+        )
+    ]
+
+def load_concept_map() -> list[Concept]:
+    with open(config.concept_map_path, encoding="utf-8") as f:
+        data = json.load(f)
+    return [Concept(**item) for item in data]
+
 """
 Optional project capability: Retrieval-Augmented Generation (RAG).
 

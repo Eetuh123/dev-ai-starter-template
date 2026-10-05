@@ -1,0 +1,32 @@
+[
+  {
+    "id": "functions",
+    "name": "Functions",
+    "description": "What a function is, notation f(x), evaluating functions.",
+    "prerequisites": []
+  },
+  {
+    "id": "function_composition",
+    "name": "Function composition",
+    "description": "Combining functions, f(g(x)).",
+    "prerequisites": ["functions"]
+  },
+  {
+    "id": "limits",
+    "name": "Limits",
+    "description": "What value a function approaches as x approaches a point.",
+    "prerequisites": ["functions"]
+  },
+  {
+    "id": "derivative_rules",
+    "name": "Derivative rules",
+    "description": "Power, sum and constant rules for derivatives.",
+    "prerequisites": ["limits"]
+  },
+  {
+    "id": "chain_rule",
+    "name": "Chain rule",
+    "description": "Derivative of a composite function f(g(x)).",
+    "prerequisites": ["derivative_rules", "function_composition"]
+  }
+]

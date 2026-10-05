@@ -12,3 +12,7 @@ To maintain privacy, security, and repository health, **DO NOT COMMIT**:
 4. **Credentials & Secrets:** Never store API keys, tokens, or passwords in data files.
 
 Use this directory responsibly for small, sample datasets and public documentation.
+
+## Contents
+
+- `conceptsMockup.json`: small hand-written concept map (5 concepts) used by the skeleton. Each entry follows the `Concept` schema in `src/schemas/study.py`. The real map replaces it later; the path is set by `CONCEPT_MAP_PATH` in `.env`.
