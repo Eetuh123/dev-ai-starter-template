@@ -7,9 +7,8 @@ def main() -> None:
     demo2.launch()
 
 '''
-
-demo2 = build_ui()
+demo = build_ui()
 
 if __name__ == "__main__":
     # main()
-    demo2.launch()
+    demo.launch()
