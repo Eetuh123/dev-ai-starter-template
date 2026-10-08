@@ -14,7 +14,11 @@ from src.schemas.study import Concept, ConceptProgress, Lesson, QuizQuestion
 from src.capabilities.rag import load_concept_map, retrieve
 from src.capabilities.memory import load_progress, save_progress
 from src.capabilities.verifier import verify
-from src.services.assessment import next_question, find_gaps
+# from src.services.assessment import next_question, find_gaps
+from src.services.assessment import (
+    get_assessment_concepts as assessment_get_concepts,
+    get_questions as assessment_get_questions,
+)
 from src.services.lesson import generate_lesson
 from src.services.quiz import generate_quiz, check_answer
 
@@ -42,7 +46,6 @@ class StudyMaterial(BaseModel):
     items: list[StudyItem] = []
     error: str | None = None
 
-
 # ---------------------------------------------------------------------------
 # Study flow (called by the UI)
 # ---------------------------------------------------------------------------
@@ -55,10 +58,8 @@ def list_goals() -> list[Concept]:
         # OSError: file missing. ValueError: bad JSON or Pydantic validation error.
         return []
 
-
 def _concepts_by_id() -> dict[str, Concept]:
     return {c.id: c for c in load_concept_map()}
-
 
 def start_assessment(goal_id: str | None) -> AssessmentStep:
     """Load saved progress and return the first assessment question."""
@@ -66,10 +67,25 @@ def start_assessment(goal_id: str | None) -> AssessmentStep:
         return AssessmentStep(message="Pick a goal first.")
 
     progress = load_progress()
-    question = next_question(goal_id, progress)
-    message = "" if question else "Nothing to assess, you already know the prerequisites."
-    return AssessmentStep(progress=progress, question=question, message=message)
+    concepts = get_assessment_concepts(goal_id)
+    if not concepts:
+        return AssessmentStep(progress=progress,
+                              message="No prerequisite assessments for this goal.")
 
+    first_concept = concepts[0]
+    questions = get_questions(first_concept)
+    if not questions:
+        return AssessmentStep(progress=progress,
+                              message="No questions available.")
+
+    return AssessmentStep(progress=progress, question=questions[0], 
+                          message="")
+
+def get_assessment_concepts(goal_id: str):
+    return assessment_get_concepts(goal_id)
+
+def get_questions(concept_id: str):
+    return assessment_get_questions(concept_id)
 
 def submit_answer(
     goal_id: str,
@@ -77,25 +93,32 @@ def submit_answer(
     question: QuizQuestion | None,
     answer_text: str,
 ) -> AssessmentStep:
-    """Check an answer, update and save progress, return the next question."""
+    """Check an answer and save the result."""
     if question is None:
-        return AssessmentStep(progress=progress, message="No active question. Start the assessment first.")
+        return AssessmentStep(progress=progress,
+            message="No active question. Start the assessment first.")
 
     if not answer_text or not answer_text.strip():
-        return AssessmentStep(progress=progress, question=question, message="Please type an answer first.")
+        return AssessmentStep(progress=progress, question=question,
+                              message="Please type an answer first.")
 
     correct = check_answer(question, answer_text.strip())
 
-    # Placeholder rule: one answer decides the status. Real logic belongs in assessment.py.
-    entry = progress.get(question.concept_id) or ConceptProgress(concept_id=question.concept_id)
+    entry = progress.get(question.concept_id) or ConceptProgress(
+        concept_id=question.concept_id)
     entry.quiz_scores.append(correct)
     entry.status = "known" if correct else "missing"
+
     progress[question.concept_id] = entry
     save_progress(progress)
 
-    message = "Correct!" if correct else f"Not quite. Expected: `{question.answer}`"
-    return AssessmentStep(progress=progress, question=next_question(goal_id, progress), message=message)
+    message = (
+        "Correct!"
+        if correct
+        else f"Not quite. Expected: `{question.answer}`")
 
+    return AssessmentStep(progress=progress, question=None, 
+                          message=message)
 
 def get_study_material(goal_id: str, progress: dict[str, ConceptProgress]) -> StudyMaterial:
     """For each missing concept: retrieve -> lesson -> verify -> quiz."""
@@ -103,10 +126,11 @@ def get_study_material(goal_id: str, progress: dict[str, ConceptProgress]) -> St
         concepts = _concepts_by_id()
         items: list[StudyItem] = []
 
-        for concept_id in find_gaps(goal_id, progress):
+        # tällä hetkellä ei ole find_gaps()
+        # for concept_id in find_gaps(goal_id, progress):
+        for concept_id in get_assessment_concepts(goal_id):
             concept = concepts.get(concept_id)
-            if concept is None:
-                continue
+            if concept is None: continue
 
             chunks = retrieve(concept_id)
             lesson = generate_lesson(concept, chunks)
@@ -208,3 +232,45 @@ def generate_response(user_message: str, service: Optional[AIService] = None) ->
     active_service = service or AIService()
     response = active_service.process_message(user_message)
     return response.content
+
+
+# Vanha koodi talteen perhaps
+'''
+base
+def start_assessment(goal_id: str | None) -> AssessmentStep:
+    """Load saved progress and return the first assessment question."""
+    if not goal_id:
+        return AssessmentStep(message="Pick a goal first.")
+
+    progress = load_progress()
+    question = next_question(goal_id, progress)
+    message = "" if question else "Nothing to assess, you already know the prerequisites."
+    return AssessmentStep(progress=progress, question=question, message=message)
+'''
+
+'''
+def submit_answer(
+    goal_id: str,
+    progress: dict[str, ConceptProgress],
+    question: QuizQuestion | None,
+    answer_text: str,
+) -> AssessmentStep:
+    """Check an answer, update and save progress, return the next question."""
+    if question is None:
+        return AssessmentStep(progress=progress, message="No active question. Start the assessment first.")
+
+    if not answer_text or not answer_text.strip():
+        return AssessmentStep(progress=progress, question=question, message="Please type an answer first.")
+
+    correct = check_answer(question, answer_text.strip())
+
+    # Placeholder rule: one answer decides the status. Real logic belongs in assessment.py.
+    entry = progress.get(question.concept_id) or ConceptProgress(concept_id=question.concept_id)
+    entry.quiz_scores.append(correct)
+    entry.status = "known" if correct else "missing"
+    progress[question.concept_id] = entry
+    save_progress(progress)
+
+    message = "Correct!" if correct else f"Not quite. Expected: `{question.answer}`"
+    return AssessmentStep(progress=progress, question=next_question(goal_id, progress), message=message)
+'''
