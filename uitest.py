@@ -38,7 +38,7 @@ def build_ui() -> gr.Blocks:
     """
     goals = [(c.name, c.id) for c in list_goals()]
 
-    with gr.Blocks(title="Turbo Super Study Helper") as demo:
+    with gr.Blocks(title="Turbo Super Study Helper") as demo2:
         gr.Markdown("# Turbo Super Study Helper\nSkeleton version, running on fake data.")
 
         # Per-browser-session state
@@ -50,7 +50,7 @@ def build_ui() -> gr.Blocks:
             value=goals[-1][1] if goals else None,
             label="What do you want to learn?",
         )
-        start_btn = gr.Button("Start assessment", variant="primary")
+        start_btn = gr.Button("Start NOW", variant="primary")
 
         question_md = gr.Markdown()
         answer_box = gr.Textbox(label="Your answer", placeholder="e.g. 2*x")
@@ -76,6 +76,7 @@ def build_ui() -> gr.Blocks:
             inputs=goal,
             outputs=[progress_state, question_state, question_md, feedback_md],
         )
+        
         answer_inputs = [goal, progress_state, question_state, answer_box]
         answer_outputs = [progress_state, question_state, question_md, feedback_md, answer_box]
         answer_btn.click(on_answer, inputs=answer_inputs, outputs=answer_outputs)
@@ -83,4 +84,4 @@ def build_ui() -> gr.Blocks:
 
         material_btn.click(on_material, inputs=[goal, progress_state], outputs=material_md)
 
-    return demo
+    return demo2
