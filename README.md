@@ -125,7 +125,11 @@ ollama run llama3.2
 Run the application from the root directory of the project:
 
 ```bash
-python -m app.main
+python main.py
+```
+Or to use hot reaload run:
+```bash
+gradio main.py
 ```
 
 Then open your browser at `http://localhost:7860`.
