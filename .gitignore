@@ -21,3 +21,6 @@ ENV/
 # Operating system files
 .DS_Store
 Thumbs.db
+
+# Local textbook sources and converted books
+/data/books/
