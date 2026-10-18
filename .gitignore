@@ -24,3 +24,6 @@ Thumbs.db
 
 # Local textbook sources and converted books
 /data/books/
+
+# Local pieces of text from the books
+/data/rag/
