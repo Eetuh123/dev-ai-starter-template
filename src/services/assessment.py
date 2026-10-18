@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from src.schemas.study import QuizQuestion
 
-CONCEPTS_FILE = Path("data/conceptsMockup.json")
+CONCEPTS_FILE = Path("data/concepts.json")
 
 DEMO_QUESTIONS = {
     "functions": [
