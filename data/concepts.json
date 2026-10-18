@@ -1,0 +1,1377 @@
+[
+  {
+    "id": "real_numbers",
+    "name": "Real numbers",
+    "name_en": "Real numbers",
+    "description": "Luokittele luvut ja vertaile niiden suuruutta.",
+    "prerequisites": [],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51239",
+        "module_title": "Real Numbers: Algebra Essentials",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51239/index.cnxml"
+      }
+    ],
+    "name_fi": "Reaaliluvut"
+  },
+  {
+    "id": "arithmetic",
+    "name": "Order of operations",
+    "name_en": "Order of operations",
+    "description": "Laske sulkuja ja peruslaskutoimituksia sisältäviä lausekkeita.",
+    "prerequisites": [
+      "real_numbers"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51239",
+        "module_title": "Real Numbers: Algebra Essentials",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51239/index.cnxml"
+      }
+    ],
+    "name_fi": "Laskujärjestys"
+  },
+  {
+    "id": "fractions",
+    "name": "Fractions",
+    "name_en": "Fractions",
+    "description": "Sievennä murtolukuja ja suorita niiden laskutoimitukset.",
+    "prerequisites": [
+      "arithmetic"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51239",
+        "module_title": "Real Numbers: Algebra Essentials",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51239/index.cnxml"
+      }
+    ],
+    "name_fi": "Murtoluvut"
+  },
+  {
+    "id": "expressions",
+    "name": "Algebraic expressions",
+    "name_en": "Algebraic expressions",
+    "description": "Sijoita muuttujille arvoja ja yhdistä samanmuotoiset termit.",
+    "prerequisites": [
+      "arithmetic"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51239",
+        "module_title": "Real Numbers: Algebra Essentials",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51239/index.cnxml"
+      }
+    ],
+    "name_fi": "Algebralliset lausekkeet"
+  },
+  {
+    "id": "exponent_rules",
+    "name": "Exponent rules",
+    "name_en": "Exponent rules",
+    "description": "Käytä kokonaislukupotenssien laskusääntöjä.",
+    "prerequisites": [
+      "expressions",
+      "fractions"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51241",
+        "module_title": "Exponents and Scientific Notation",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51241/index.cnxml"
+      }
+    ],
+    "name_fi": "Potenssien laskusäännöt"
+  },
+  {
+    "id": "scientific_notation",
+    "name": "Scientific notation",
+    "name_en": "Scientific notation",
+    "description": "Esitä suuria ja pieniä lukuja kymmenpotenssimuodossa.",
+    "prerequisites": [
+      "exponent_rules"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51241",
+        "module_title": "Exponents and Scientific Notation",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51241/index.cnxml"
+      }
+    ],
+    "name_fi": "Kymmenpotenssimuoto"
+  },
+  {
+    "id": "radicals",
+    "name": "Radicals",
+    "name_en": "Radicals",
+    "description": "Sievennä neliöjuuria ja muita juurilausekkeita.",
+    "prerequisites": [
+      "exponent_rules"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51242",
+        "module_title": "Radicals and Rational Exponents",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51242/index.cnxml"
+      }
+    ],
+    "name_fi": "Juuret"
+  },
+  {
+    "id": "rational_exponents",
+    "name": "Rational exponents",
+    "name_en": "Rational exponents",
+    "description": "Muunna juuria murtopotensseiksi ja takaisin.",
+    "prerequisites": [
+      "radicals"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51242",
+        "module_title": "Radicals and Rational Exponents",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51242/index.cnxml"
+      }
+    ],
+    "name_fi": "Rationaaliset eksponentit"
+  },
+  {
+    "id": "polynomials",
+    "name": "Polynomial operations",
+    "name_en": "Polynomial operations",
+    "description": "Laske polynomien summia ja tuloja.",
+    "prerequisites": [
+      "exponent_rules"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51246",
+        "module_title": "Polynomials",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51246/index.cnxml"
+      }
+    ],
+    "name_fi": "Polynomien laskutoimitukset"
+  },
+  {
+    "id": "factoring",
+    "name": "Factoring polynomials",
+    "name_en": "Factoring polynomials",
+    "description": "Jaa polynomeja tekijöihin yhteisen tekijän ja tuttujen kaavojen avulla.",
+    "prerequisites": [
+      "polynomials"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51247",
+        "module_title": "Factoring Polynomials",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51247/index.cnxml"
+      }
+    ],
+    "name_fi": "Tekijöihin jako"
+  },
+  {
+    "id": "rational_expressions",
+    "name": "Rational expressions",
+    "name_en": "Rational expressions",
+    "description": "Sievennä ja laske polynomien osamääriä huomioiden rajoitukset.",
+    "prerequisites": [
+      "factoring"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51248",
+        "module_title": "Rational Expressions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51248/index.cnxml"
+      }
+    ],
+    "name_fi": "Rationaalilausekkeet"
+  },
+  {
+    "id": "linear_equations",
+    "name": "Linear equations",
+    "name_en": "Linear equations",
+    "description": "Ratkaise yhden muuttujan lineaarisia yhtälöitä.",
+    "prerequisites": [
+      "expressions",
+      "fractions"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51253",
+        "module_title": "Linear Equations in One Variable",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51253/index.cnxml"
+      }
+    ],
+    "name_fi": "Ensimmäisen asteen yhtälöt"
+  },
+  {
+    "id": "formula_rearrangement",
+    "name": "Rearranging formulas",
+    "name_en": "Rearranging formulas",
+    "description": "Eristä haluttu muuttuja kaavasta.",
+    "prerequisites": [
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51253",
+        "module_title": "Linear Equations in One Variable",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51253/index.cnxml"
+      }
+    ],
+    "name_fi": "Kaavan ratkaiseminen muuttujan suhteen"
+  },
+  {
+    "id": "word_problems",
+    "name": "Models and applications",
+    "name_en": "Models and applications",
+    "description": "Muodosta sanallisesta tilanteesta yhtälö ja tulkitse ratkaisu.",
+    "prerequisites": [
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51254",
+        "module_title": "Models and Applications",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51254/index.cnxml"
+      }
+    ],
+    "name_fi": "Sanallisten tehtävien yhtälöt"
+  },
+  {
+    "id": "quadratic_equations",
+    "name": "Quadratic equations",
+    "name_en": "Quadratic equations",
+    "description": "Ratkaise toisen asteen yhtälö tekijöihin jaolla tai ratkaisukaavalla.",
+    "prerequisites": [
+      "factoring",
+      "linear_equations",
+      "radicals"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51256",
+        "module_title": "Quadratic Equations",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51256/index.cnxml"
+      }
+    ],
+    "name_fi": "Toisen asteen yhtälöt"
+  },
+  {
+    "id": "rational_equations",
+    "name": "Rational equations",
+    "name_en": "Rational equations",
+    "description": "Ratkaise murtolausekkeita sisältäviä yhtälöitä ja tarkista rajoitukset.",
+    "prerequisites": [
+      "rational_expressions",
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51258",
+        "module_title": "Other Types of Equations",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51258/index.cnxml"
+      }
+    ],
+    "name_fi": "Rationaaliyhtälöt"
+  },
+  {
+    "id": "radical_equations",
+    "name": "Radical equations",
+    "name_en": "Radical equations",
+    "description": "Ratkaise juuriyhtälö ja tarkista mahdolliset vierasjuuret.",
+    "prerequisites": [
+      "quadratic_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51258",
+        "module_title": "Other Types of Equations",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51258/index.cnxml"
+      }
+    ],
+    "name_fi": "Juuriyhtälöt"
+  },
+  {
+    "id": "linear_inequalities",
+    "name": "Linear inequalities",
+    "name_en": "Linear inequalities",
+    "description": "Ratkaise epäyhtälö ja huomioi negatiivisella kertominen.",
+    "prerequisites": [
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51259",
+        "module_title": "Linear Inequalities and Absolute Value Inequalities",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51259/index.cnxml"
+      }
+    ],
+    "name_fi": "Lineaariset epäyhtälöt"
+  },
+  {
+    "id": "absolute_value",
+    "name": "Absolute value",
+    "name_en": "Absolute value",
+    "description": "Tulkitse itseisarvo etäisyytenä ja ratkaise perusyhtälöitä.",
+    "prerequisites": [
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51259",
+        "module_title": "Linear Inequalities and Absolute Value Inequalities",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51259/index.cnxml"
+      }
+    ],
+    "name_fi": "Itseisarvo"
+  },
+  {
+    "id": "coordinate_plane",
+    "name": "Rectangular coordinate system",
+    "name_en": "Rectangular coordinate system",
+    "description": "Lue pisteitä ja kuvaajia koordinaatistossa.",
+    "prerequisites": [
+      "real_numbers"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51252",
+        "module_title": "The Rectangular Coordinate Systems and Graphs",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51252/index.cnxml"
+      }
+    ],
+    "name_fi": "Koordinaatisto"
+  },
+  {
+    "id": "functions",
+    "name": "Functions and function notation",
+    "name_en": "Functions and function notation",
+    "description": "Tunnista funktio ja laske funktion arvoja.",
+    "prerequisites": [
+      "expressions",
+      "coordinate_plane"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51261",
+        "module_title": "Functions and Function Notation",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51261/index.cnxml"
+      }
+    ],
+    "name_fi": "Funktio ja funktion arvo"
+  },
+  {
+    "id": "domain_range",
+    "name": "Domain and range",
+    "name_en": "Domain and range",
+    "description": "Määritä funktion sallitut syötteet ja mahdolliset arvot.",
+    "prerequisites": [
+      "functions",
+      "rational_expressions",
+      "radicals"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51262",
+        "module_title": "Domain and Range",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51262/index.cnxml"
+      }
+    ],
+    "name_fi": "Määrittelyjoukko ja arvojoukko"
+  },
+  {
+    "id": "function_graphs",
+    "name": "Behavior of graphs",
+    "name_en": "Behavior of graphs",
+    "description": "Lue nollakohtia ja kasvua tai vähenemistä kuvaajasta.",
+    "prerequisites": [
+      "functions"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51263",
+        "module_title": "Rates of Change and Behavior of Graphs",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51263/index.cnxml"
+      }
+    ],
+    "name_fi": "Funktion kuvaajan tulkinta"
+  },
+  {
+    "id": "average_rate",
+    "name": "Average rate of change",
+    "name_en": "Average rate of change",
+    "description": "Laske erotusosamäärä kahden pisteen välillä.",
+    "prerequisites": [
+      "functions",
+      "fractions"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51263",
+        "module_title": "Rates of Change and Behavior of Graphs",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51263/index.cnxml"
+      }
+    ],
+    "name_fi": "Keskimääräinen muutosnopeus"
+  },
+  {
+    "id": "linear_functions",
+    "name": "Linear functions",
+    "name_en": "Linear functions",
+    "description": "Tulkitse suoran kulmakerroin ja vakiotermi.",
+    "prerequisites": [
+      "average_rate",
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51270",
+        "module_title": "Linear Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51270/index.cnxml"
+      }
+    ],
+    "name_fi": "Lineaariset funktiot"
+  },
+  {
+    "id": "line_equations",
+    "name": "Equation of a line",
+    "name_en": "Equation of a line",
+    "description": "Muodosta suoran yhtälö pisteen ja kulmakertoimen avulla.",
+    "prerequisites": [
+      "linear_functions"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51270",
+        "module_title": "Linear Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51270/index.cnxml"
+      }
+    ],
+    "name_fi": "Suoran yhtälö"
+  },
+  {
+    "id": "quadratic_functions",
+    "name": "Quadratic functions",
+    "name_en": "Quadratic functions",
+    "description": "Tutki paraabelin huippua ja nollakohtia.",
+    "prerequisites": [
+      "quadratic_equations",
+      "function_graphs"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51274",
+        "module_title": "Quadratic Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51274/index.cnxml"
+      }
+    ],
+    "name_fi": "Toisen asteen funktiot"
+  },
+  {
+    "id": "power_functions",
+    "name": "Power functions",
+    "name_en": "Power functions",
+    "description": "Tunnista potenssifunktion peruskäyttäytyminen.",
+    "prerequisites": [
+      "function_graphs",
+      "rational_exponents"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51275",
+        "module_title": "Power Functions and Polynomial Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51275/index.cnxml"
+      }
+    ],
+    "name_fi": "Potenssifunktiot"
+  },
+  {
+    "id": "polynomial_graphs",
+    "name": "Graphs of polynomial functions",
+    "name_en": "Graphs of polynomial functions",
+    "description": "Yhdistä tekijät ja nollakohdat polynomin kuvaajaan.",
+    "prerequisites": [
+      "factoring",
+      "power_functions"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51276",
+        "module_title": "Graphs of Polynomial Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51276/index.cnxml"
+      }
+    ],
+    "name_fi": "Polynomifunktioiden kuvaajat"
+  },
+  {
+    "id": "rational_functions",
+    "name": "Rational functions",
+    "name_en": "Rational functions",
+    "description": "Tunnista rationaalifunktion nollakohdat ja pystyasymptootit.",
+    "prerequisites": [
+      "domain_range",
+      "polynomial_graphs"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51279",
+        "module_title": "Rational Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51279/index.cnxml"
+      }
+    ],
+    "name_fi": "Rationaalifunktiot"
+  },
+  {
+    "id": "function_composition",
+    "name": "Composition of functions",
+    "name_en": "Composition of functions",
+    "description": "Tunnista sisä- ja ulkofunktio ja muodosta f(g(x)).",
+    "prerequisites": [
+      "functions"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51265",
+        "module_title": "Composition of Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51265/index.cnxml"
+      }
+    ],
+    "name_fi": "Yhdistetty funktio"
+  },
+  {
+    "id": "transformations",
+    "name": "Transformation of functions",
+    "name_en": "Transformation of functions",
+    "description": "Tulkitse kuvaajan siirrot venytykset ja peilaukset.",
+    "prerequisites": [
+      "function_graphs"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51266",
+        "module_title": "Transformation of Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51266/index.cnxml"
+      }
+    ],
+    "name_fi": "Funktion muunnokset"
+  },
+  {
+    "id": "inverse_functions",
+    "name": "Inverse functions",
+    "name_en": "Inverse functions",
+    "description": "Tunnista kääntyvyys ja ratkaise yksinkertainen käänteisfunktio.",
+    "prerequisites": [
+      "function_composition",
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "college-algebra-2e",
+        "module_id": "m51268",
+        "module_title": "Inverse Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51268/index.cnxml"
+      }
+    ],
+    "name_fi": "Käänteisfunktiot"
+  },
+  {
+    "id": "exponential_functions",
+    "name": "Exponential functions",
+    "name_en": "Exponential functions",
+    "description": "Tulkitse eksponentiaalista kasvua ja vähenemistä.",
+    "prerequisites": [
+      "functions",
+      "exponent_rules"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49361",
+        "module_title": "Exponential Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49361/index.cnxml"
+      }
+    ],
+    "name_fi": "Eksponenttifunktiot"
+  },
+  {
+    "id": "logarithms",
+    "name": "Logarithmic functions",
+    "name_en": "Logarithmic functions",
+    "description": "Tulkitse logaritmi eksponentin ratkaisemisena.",
+    "prerequisites": [
+      "exponential_functions"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49363",
+        "module_title": "Logarithmic Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49363/index.cnxml"
+      }
+    ],
+    "name_fi": "Logaritmit"
+  },
+  {
+    "id": "log_rules",
+    "name": "Logarithmic properties",
+    "name_en": "Logarithmic properties",
+    "description": "Käytä tulon osamäärän ja potenssin logaritmisääntöjä.",
+    "prerequisites": [
+      "logarithms"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49365",
+        "module_title": "Logarithmic Properties",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49365/index.cnxml"
+      }
+    ],
+    "name_fi": "Logaritmien laskusäännöt"
+  },
+  {
+    "id": "exp_log_equations",
+    "name": "Exponential and logarithmic equations",
+    "name_en": "Exponential and logarithmic equations",
+    "description": "Ratkaise eksponentti- ja logaritmiyhtälöitä.",
+    "prerequisites": [
+      "log_rules",
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49366",
+        "module_title": "Exponential and Logarithmic Equations",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49366/index.cnxml"
+      }
+    ],
+    "name_fi": "Eksponentti- ja logaritmiyhtälöt"
+  },
+  {
+    "id": "exp_log_graphs",
+    "name": "Graphs of exponential and logarithmic functions",
+    "name_en": "Graphs of exponential and logarithmic functions",
+    "description": "Tulkitse kuvaajien muoto ja määrittelyrajoitukset.",
+    "prerequisites": [
+      "logarithms",
+      "transformations"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49364",
+        "module_title": "Graphs of Logarithmic Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49364/index.cnxml"
+      }
+    ],
+    "name_fi": "Eksponentti- ja logaritmikuvaajat"
+  },
+  {
+    "id": "angles_radians",
+    "name": "Angles and radians",
+    "name_en": "Angles and radians",
+    "description": "Muunna asteet radiaaneiksi ja tulkitse suunnattuja kulmia.",
+    "prerequisites": [
+      "fractions",
+      "coordinate_plane"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49371",
+        "module_title": "Angles",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49371/index.cnxml"
+      }
+    ],
+    "name_fi": "Kulmat ja radiaanit"
+  },
+  {
+    "id": "unit_circle",
+    "name": "Unit circle",
+    "name_en": "Unit circle",
+    "description": "Yhdistä kulma yksikköympyrän pisteeseen.",
+    "prerequisites": [
+      "angles_radians"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49372",
+        "module_title": "Unit Circle: Sine and Cosine Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49372/index.cnxml"
+      }
+    ],
+    "name_fi": "Yksikköympyrä"
+  },
+  {
+    "id": "sin_cos",
+    "name": "Sine and cosine",
+    "name_en": "Sine and cosine",
+    "description": "Laske ja tulkitse sini ja kosini yksikköympyrän avulla.",
+    "prerequisites": [
+      "unit_circle",
+      "functions"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49372",
+        "module_title": "Unit Circle: Sine and Cosine Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49372/index.cnxml"
+      }
+    ],
+    "name_fi": "Sini ja kosini"
+  },
+  {
+    "id": "tan_reciprocal",
+    "name": "Tangent and reciprocal trigonometric functions",
+    "name_en": "Tangent and reciprocal trigonometric functions",
+    "description": "Muodosta tangentti ja käänteislukufunktiot sinistä ja kosinista.",
+    "prerequisites": [
+      "sin_cos"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49374",
+        "module_title": "The Other Trigonometric Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49374/index.cnxml"
+      }
+    ],
+    "name_fi": "Tangentti ja muut trigonometriset funktiot"
+  },
+  {
+    "id": "right_triangle",
+    "name": "Right triangle trigonometry",
+    "name_en": "Right triangle trigonometry",
+    "description": "Ratkaise sivuja ja kulmia trigonometrisilla suhteilla.",
+    "prerequisites": [
+      "tan_reciprocal",
+      "linear_equations"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49384",
+        "module_title": "Right Triangle Trigonometry",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49384/index.cnxml"
+      }
+    ],
+    "name_fi": "Suorakulmaisen kolmion trigonometria"
+  },
+  {
+    "id": "trig_graphs",
+    "name": "Graphs of sine and cosine",
+    "name_en": "Graphs of sine and cosine",
+    "description": "Tulkitse amplitudi jakso ja vaihesiirto.",
+    "prerequisites": [
+      "sin_cos",
+      "transformations"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49387",
+        "module_title": "Graphs of the Sine and Cosine Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49387/index.cnxml"
+      }
+    ],
+    "name_fi": "Sinin ja kosinin kuvaajat"
+  },
+  {
+    "id": "tangent_graph",
+    "name": "Graphs of other trigonometric functions",
+    "name_en": "Graphs of other trigonometric functions",
+    "description": "Tunnista tangentin jakso ja pystyasymptootit.",
+    "prerequisites": [
+      "tan_reciprocal",
+      "trig_graphs"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49389",
+        "module_title": "Graphs of the Other Trigonometric Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49389/index.cnxml"
+      }
+    ],
+    "name_fi": "Tangentin kuvaaja"
+  },
+  {
+    "id": "inverse_trig",
+    "name": "Inverse trigonometric functions",
+    "name_en": "Inverse trigonometric functions",
+    "description": "Tulkitse arcsin arccos ja arctan sekä niiden pääarvot.",
+    "prerequisites": [
+      "inverse_functions",
+      "tan_reciprocal"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49390",
+        "module_title": "Inverse Trigonometric Functions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49390/index.cnxml"
+      }
+    ],
+    "name_fi": "Käänteiset trigonometriset funktiot"
+  },
+  {
+    "id": "trig_identities",
+    "name": "Trigonometric identities",
+    "name_en": "Trigonometric identities",
+    "description": "Sievennä lausekkeita perusidentiteettien avulla.",
+    "prerequisites": [
+      "tan_reciprocal"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49393",
+        "module_title": "Simplifying and Verifying Trigonometric Identities",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49393/index.cnxml"
+      }
+    ],
+    "name_fi": "Trigonometriset perusidentiteetit"
+  },
+  {
+    "id": "angle_sum",
+    "name": "Sum and difference identities",
+    "name_en": "Sum and difference identities",
+    "description": "Käytä sinin ja kosinin summa- ja erotuskaavoja.",
+    "prerequisites": [
+      "trig_identities"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49395",
+        "module_title": "Sum and Difference Identities",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49395/index.cnxml"
+      }
+    ],
+    "name_fi": "Kulmien summakaavat"
+  },
+  {
+    "id": "double_angle",
+    "name": "Double-angle formulas",
+    "name_en": "Double-angle formulas",
+    "description": "Sievennä kaksinkertaisen kulman sini ja kosini.",
+    "prerequisites": [
+      "angle_sum"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49396",
+        "module_title": "Double-Angle, Half-Angle, and Reduction Formulas",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49396/index.cnxml"
+      }
+    ],
+    "name_fi": "Kaksinkertaisen kulman kaavat"
+  },
+  {
+    "id": "trig_equations",
+    "name": "Trigonometric equations",
+    "name_en": "Trigonometric equations",
+    "description": "Ratkaise trigonometrisia yhtälöitä annetulla välillä.",
+    "prerequisites": [
+      "inverse_trig",
+      "trig_identities"
+    ],
+    "sources": [
+      {
+        "book_id": "precalculus-2e",
+        "module_id": "m49398",
+        "module_title": "Solving Trigonometric Equations",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m49398/index.cnxml"
+      }
+    ],
+    "name_fi": "Trigonometriset yhtälöt"
+  },
+  {
+    "id": "limits",
+    "name": "The limit of a function",
+    "name_en": "The limit of a function",
+    "description": "Erota funktion arvo ja lähestyttäessä saatava raja-arvo.",
+    "prerequisites": [
+      "function_graphs"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53491",
+        "module_title": "The Limit of a Function",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53491/index.cnxml"
+      }
+    ],
+    "name_fi": "Raja-arvon käsite"
+  },
+  {
+    "id": "one_sided_limits",
+    "name": "One-sided limits",
+    "name_en": "One-sided limits",
+    "description": "Tutki vasemman- ja oikeanpuoleisen raja-arvon yhtäsuuruutta.",
+    "prerequisites": [
+      "limits"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53491",
+        "module_title": "The Limit of a Function",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53491/index.cnxml"
+      }
+    ],
+    "name_fi": "Toispuoliset raja-arvot"
+  },
+  {
+    "id": "limit_laws",
+    "name": "Limit laws",
+    "name_en": "Limit laws",
+    "description": "Laske summan tulon ja osamäärän raja-arvoja ehtojen täyttyessä.",
+    "prerequisites": [
+      "limits",
+      "polynomials"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53492",
+        "module_title": "The Limit Laws",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53492/index.cnxml"
+      }
+    ],
+    "name_fi": "Raja-arvojen laskusäännöt"
+  },
+  {
+    "id": "limit_simplification",
+    "name": "Limits by factoring and rationalization",
+    "name_en": "Limits by factoring and rationalization",
+    "description": "Poista 0/0-muoto tekijöihin jaolla tai laventamalla.",
+    "prerequisites": [
+      "limit_laws",
+      "rational_expressions",
+      "radicals"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53492",
+        "module_title": "The Limit Laws",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53492/index.cnxml"
+      }
+    ],
+    "name_fi": "Raja-arvon laskeminen sieventämällä"
+  },
+  {
+    "id": "continuity",
+    "name": "Continuity",
+    "name_en": "Continuity",
+    "description": "Tarkista raja-arvon ja funktion arvon yhtäsuuruus.",
+    "prerequisites": [
+      "one_sided_limits",
+      "limit_laws"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53489",
+        "module_title": "Continuity",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53489/index.cnxml"
+      }
+    ],
+    "name_fi": "Jatkuvuus"
+  },
+  {
+    "id": "infinite_limits",
+    "name": "Infinite limits",
+    "name_en": "Infinite limits",
+    "description": "Tulkitse rajaton kasvu pisteen lähellä ja pystyasymptootit.",
+    "prerequisites": [
+      "one_sided_limits",
+      "rational_functions"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53491",
+        "module_title": "The Limit of a Function",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53491/index.cnxml"
+      }
+    ],
+    "name_fi": "Äärettömät raja-arvot"
+  },
+  {
+    "id": "limits_infinity",
+    "name": "Limits at infinity",
+    "name_en": "Limits at infinity",
+    "description": "Tutki funktion käyttäytymistä muuttujan kasvaessa rajatta.",
+    "prerequisites": [
+      "limit_laws",
+      "rational_functions"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53596",
+        "module_title": "Limits at Infinity and Asymptotes",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53596/index.cnxml"
+      }
+    ],
+    "name_fi": "Raja-arvot äärettömyydessä"
+  },
+  {
+    "id": "precise_limit",
+    "name": "Precise definition of a limit",
+    "name_en": "Precise definition of a limit",
+    "description": "Tulkitse epsilon-delta-määritelmän perusajatus.",
+    "prerequisites": [
+      "limits",
+      "absolute_value",
+      "linear_inequalities"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53493",
+        "module_title": "The Precise Definition of a Limit",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53493/index.cnxml"
+      }
+    ],
+    "name_fi": "Raja-arvon täsmällinen määritelmä"
+  },
+  {
+    "id": "derivative_definition",
+    "name": "Defining the derivative",
+    "name_en": "Defining the derivative",
+    "description": "Muodosta ja laske derivaatta erotusosamäärän raja-arvona.",
+    "prerequisites": [
+      "average_rate",
+      "limit_simplification"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53495",
+        "module_title": "Defining the Derivative",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53495/index.cnxml"
+      }
+    ],
+    "name_fi": "Derivaatan määritelmä"
+  },
+  {
+    "id": "derivative_function",
+    "name": "The derivative as a function",
+    "name_en": "The derivative as a function",
+    "description": "Yhdistä derivaatan merkki ja arvo alkuperäisen funktion käyttäytymiseen.",
+    "prerequisites": [
+      "derivative_definition"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53573",
+        "module_title": "The Derivative as a Function",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53573/index.cnxml"
+      }
+    ],
+    "name_fi": "Derivaattafunktion tulkinta"
+  },
+  {
+    "id": "power_rule",
+    "name": "Power rule",
+    "name_en": "Power rule",
+    "description": "Derivoi potenssifunktioita potenssisäännöllä.",
+    "prerequisites": [
+      "derivative_definition",
+      "rational_exponents"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53575",
+        "module_title": "Differentiation Rules",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53575/index.cnxml"
+      }
+    ],
+    "name_fi": "Potenssifunktion derivointi"
+  },
+  {
+    "id": "derivative_rules",
+    "name": "Derivative rules",
+    "name_en": "Derivative rules",
+    "description": "Käytä potenssin summan ja vakiokertoimen derivointisääntöjä.",
+    "prerequisites": [
+      "power_rule"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53575",
+        "module_title": "Differentiation Rules",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53575/index.cnxml"
+      }
+    ],
+    "name_fi": "Derivoinnin perussäännöt"
+  },
+  {
+    "id": "product_rule",
+    "name": "Product rule",
+    "name_en": "Product rule",
+    "description": "Derivoi kahden funktion tulo tulosäännöllä.",
+    "prerequisites": [
+      "derivative_rules"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53575",
+        "module_title": "Differentiation Rules",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53575/index.cnxml"
+      }
+    ],
+    "name_fi": "Tulon derivointi"
+  },
+  {
+    "id": "quotient_rule",
+    "name": "Quotient rule",
+    "name_en": "Quotient rule",
+    "description": "Derivoi kahden funktion osamäärä ja huomioi määrittelyrajoitukset.",
+    "prerequisites": [
+      "derivative_rules"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53575",
+        "module_title": "Differentiation Rules",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53575/index.cnxml"
+      }
+    ],
+    "name_fi": "Osamäärän derivointi"
+  },
+  {
+    "id": "trig_derivatives",
+    "name": "Derivatives of trigonometric functions",
+    "name_en": "Derivatives of trigonometric functions",
+    "description": "Derivoi sini kosini ja tangentti radiaaneilla.",
+    "prerequisites": [
+      "derivative_rules",
+      "tan_reciprocal"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53578",
+        "module_title": "Derivatives of Trigonometric Functions",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53578/index.cnxml"
+      }
+    ],
+    "name_fi": "Trigonometristen funktioiden derivointi"
+  },
+  {
+    "id": "chain_rule",
+    "name": "Chain rule",
+    "name_en": "Chain rule",
+    "description": "Derivoi yhdistetty funktio kertomalla ulkofunktion derivaatta sisäfunktion derivaatalla.",
+    "prerequisites": [
+      "function_composition",
+      "derivative_rules"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53581",
+        "module_title": "The Chain Rule",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53581/index.cnxml"
+      }
+    ],
+    "name_fi": "Ketjusääntö"
+  },
+  {
+    "id": "nested_chain_rule",
+    "name": "Repeated chain rule",
+    "name_en": "Repeated chain rule",
+    "description": "Derivoi useasta sisäkkäisestä funktiosta koostuva lauseke.",
+    "prerequisites": [
+      "chain_rule"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53581",
+        "module_title": "The Chain Rule",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53581/index.cnxml"
+      }
+    ],
+    "name_fi": "Moninkertainen ketjusääntö"
+  },
+  {
+    "id": "exp_log_derivatives",
+    "name": "Derivatives of exponential and logarithmic functions",
+    "name_en": "Derivatives of exponential and logarithmic functions",
+    "description": "Derivoi eksponentti- ja logaritmifunktioita sekä niiden yhdistelmiä.",
+    "prerequisites": [
+      "chain_rule",
+      "logarithms"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53586",
+        "module_title": "Derivatives of Exponential and Logarithmic Functions",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53586/index.cnxml"
+      }
+    ],
+    "name_fi": "Eksponentti- ja logaritmifunktioiden derivointi"
+  },
+  {
+    "id": "inverse_derivatives",
+    "name": "Derivatives of inverse functions",
+    "name_en": "Derivatives of inverse functions",
+    "description": "Käytä käänteisfunktion derivointisääntöä.",
+    "prerequisites": [
+      "chain_rule",
+      "inverse_functions"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53584",
+        "module_title": "Derivatives of Inverse Functions",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53584/index.cnxml"
+      }
+    ],
+    "name_fi": "Käänteisfunktioiden derivointi"
+  },
+  {
+    "id": "inverse_trig_derivatives",
+    "name": "Derivatives of inverse trigonometric functions",
+    "name_en": "Derivatives of inverse trigonometric functions",
+    "description": "Derivoi arcsin arccos ja arctan.",
+    "prerequisites": [
+      "inverse_derivatives",
+      "inverse_trig"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53584",
+        "module_title": "Derivatives of Inverse Functions",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53584/index.cnxml"
+      }
+    ],
+    "name_fi": "Käänteisten trigonometristen funktioiden derivointi"
+  },
+  {
+    "id": "implicit_derivatives",
+    "name": "Implicit differentiation",
+    "name_en": "Implicit differentiation",
+    "description": "Derivoi yhtälön molemmat puolet ja ratkaise y:n derivaatta.",
+    "prerequisites": [
+      "chain_rule",
+      "product_rule",
+      "formula_rearrangement"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53585",
+        "module_title": "Implicit Differentiation",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53585/index.cnxml"
+      }
+    ],
+    "name_fi": "Implisiittinen derivointi"
+  },
+  {
+    "id": "higher_derivatives",
+    "name": "Higher-order derivatives",
+    "name_en": "Higher-order derivatives",
+    "description": "Laske toinen ja muita korkeampia derivaattoja.",
+    "prerequisites": [
+      "derivative_function",
+      "derivative_rules"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53573",
+        "module_title": "The Derivative as a Function",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53573/index.cnxml"
+      }
+    ],
+    "name_fi": "Korkeammat derivaatat"
+  },
+  {
+    "id": "tangent_line",
+    "name": "Tangent line",
+    "name_en": "Tangent line",
+    "description": "Muodosta tangentin yhtälö funktion arvosta ja derivaatasta.",
+    "prerequisites": [
+      "line_equations",
+      "derivative_definition"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53495",
+        "module_title": "Defining the Derivative",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53495/index.cnxml"
+      }
+    ],
+    "name_fi": "Tangentin yhtälö"
+  },
+  {
+    "id": "rates_of_change",
+    "name": "Derivatives as rates of change",
+    "name_en": "Derivatives as rates of change",
+    "description": "Tulkitse derivaatta hetkellisenä muutosnopeutena ja huomioi yksiköt.",
+    "prerequisites": [
+      "derivative_definition",
+      "word_problems"
+    ],
+    "sources": [
+      {
+        "book_id": "calculus-volume-1",
+        "module_id": "m53576",
+        "module_title": "Derivatives as Rates of Change",
+        "source_url": "https://github.com/openstax/osbooks-calculus-bundle/blob/main/modules/m53576/index.cnxml"
+      }
+    ],
+    "name_fi": "Derivaatta muutosnopeutena"
+  }
+]
