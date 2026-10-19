@@ -1,6 +1,7 @@
 import hashlib
 import json
 from pathlib import Path
+import os
 
 import chromadb
 import numpy as np
@@ -9,7 +10,11 @@ from sentence_transformers import SentenceTransformer
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CHUNKS_FILE = PROJECT_ROOT / "data" / "rag" / "chunks.jsonl"
-DATABASE_DIR = PROJECT_ROOT / "data" / "rag" / "chroma"
+DATABASE_DIR = (
+    Path(os.environ["LOCALAPPDATA"])
+    / "dev-ai-project"
+    / "chroma"
+)
 
 MODEL_NAME = "intfloat/multilingual-e5-small"
 COLLECTION_NAME = "openstax_math_e5_v1"
