@@ -14,3 +14,5 @@ dependencies:
       - python-dotenv
       - pytest
       - sympy
+      - chromadb
+      - sentence-transformers
