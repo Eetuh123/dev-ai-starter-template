@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from src.schemas.study import QuizQuestion
+from src.schemas.study import ConceptProgress, QuizQuestion
 
 CONCEPTS_FILE = Path("data/concepts.json")
 
@@ -100,6 +100,15 @@ def get_assessment_concepts(goal_id: str):
 
 def get_questions(concept_id: str) -> list[QuizQuestion]:
     return DEMO_QUESTIONS.get(concept_id, [])
+
+def find_gaps(goal_id: str, progress: dict[str, ConceptProgress]) -> list[str]:
+    prerequisites = get_assessment_concepts(goal_id)
+    gaps = []
+    for concept_id in prerequisites:
+        entry = progress.get(concept_id)
+        if entry is None or entry.status != "known":
+            gaps.append(concept_id)
+    return gaps
 
 # Vanha koodi talteen perhaps
 '''
