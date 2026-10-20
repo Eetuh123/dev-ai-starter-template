@@ -3,7 +3,7 @@ from pathlib import Path
 from pydantic import ValidationError
 from src.schemas.study import ConceptProgress
 
-FILE = Path("data/progress_path.json")
+FILE = Path("data/progress.json")
 
 def load_progress() -> dict[str, ConceptProgress]:
     if not FILE.exists():
