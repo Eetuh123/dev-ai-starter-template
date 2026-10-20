@@ -27,3 +27,6 @@ Thumbs.db
 
 # Local pieces of text from the books
 /data/rag/
+
+# Local progress data
+/data/progress.json

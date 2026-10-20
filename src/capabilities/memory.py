@@ -1,11 +1,39 @@
+import json
+from pathlib import Path
+from pydantic import ValidationError
 from src.schemas.study import ConceptProgress
 
+FILE = Path("data/progress.json")
+
 def load_progress() -> dict[str, ConceptProgress]:
-   return {}
+    if not FILE.exists():
+        return {}
+
+    try:
+        with open(FILE, encoding="utf-8") as f:
+            raw = json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+    if not isinstance(raw, dict):
+        return {}
+
+    result = {}
+    for concept_id, entry_dict in raw.items():
+        try:
+            result[concept_id] = ConceptProgress.model_validate(entry_dict)
+        except ValidationError:
+            continue
+    return result
 
 def save_progress(progress: dict[str, ConceptProgress]) -> None:
-   pass
-
+   plain = {}
+   for concept_id, entry in progress.items():
+      plain[concept_id] = entry.model_dump()
+      
+   FILE.parent.mkdir(parents=True, exist_ok=True)
+   with open(FILE, "w", encoding="utf-8") as f:
+      json.dump(plain, f, indent=2)
 """
 Optional project capability: Memory & Persistent Conversation State.
 
