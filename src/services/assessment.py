@@ -1,93 +1,16 @@
 import json
 from pathlib import Path
-from src.schemas.study import QuizQuestion
+
+from src.schemas.study import Concept, QuizQuestion
+from src.capabilities.rag import retrieve
+from src.services.quiz import generate_quiz
 
 CONCEPTS_FILE = Path("data/concepts.json")
-
-DEMO_QUESTIONS = {
-    "functions": [
-        QuizQuestion(
-            id="functions-1",
-            concept_id="functions",
-            question="If f(x) = x², what is f(3)?",
-            answer="9",
-            difficulty=1,
-        ),
-        QuizQuestion(
-            id="functions-2",
-            concept_id="functions",
-            question="If f(x) = 2x + 1, what is f(4)?",
-            answer="9",
-            difficulty=1,
-        ),
-    ],
-
-    "function_composition": [
-        QuizQuestion(
-            id="composition-1",
-            concept_id="function_composition",
-            question="What does f(g(x)) represent?",
-            answer="The composition of f and g.",
-            difficulty=1,
-        ),
-        QuizQuestion(
-            id="composition-2",
-            concept_id="function_composition",
-            question="If f(x) = x + 1 and g(x) = 2x, what is f(g(2))?",
-            answer="5",
-            difficulty=1,
-        ),
-    ],
-
-    "limits": [
-        QuizQuestion(
-            id="limits-1",
-            concept_id="limits",
-            question="What is the limit of x + 2 as x approaches 3?",
-            answer="5",
-            difficulty=1,
-        ),
-        QuizQuestion(
-            id="limits-2",
-            concept_id="limits",
-            question="What does a limit describe?",
-            answer="The value a function approaches.",
-            difficulty=1,
-        ),
-    ],
-
-    "derivative_rules": [
-        QuizQuestion(
-            id="derivative-1",
-            concept_id="derivative_rules",
-            question="What is the derivative of x²?",
-            answer="2x",
-            difficulty=1,
-        ),
-        QuizQuestion(
-            id="derivative-2",
-            concept_id="derivative_rules",
-            question="What is the derivative of a constant?",
-            answer="0",
-            difficulty=1,
-        ),
-    ],
-
-    "chain_rule": [
-        QuizQuestion(
-            id="chain-1",
-            concept_id="chain_rule",
-            question="When is the chain rule used?",
-            answer="When differentiating a composite function.",
-            difficulty=1,
-        ),
-    ],
-}
+GENERATED_QS: dict[str, list[QuizQuestion]] = {}
 
 def load_concepts():
     with open(CONCEPTS_FILE, "r", encoding="utf-8") as file:
         return json.load(file)
-
 
 def get_assessment_concepts(goal_id: str):
     concepts = load_concepts()
@@ -99,7 +22,26 @@ def get_assessment_concepts(goal_id: str):
     return []
 
 def get_questions(concept_id: str) -> list[QuizQuestion]:
-    return DEMO_QUESTIONS.get(concept_id, [])
+    if concept_id in GENERATED_QS:
+        return GENERATED_QS[concept_id]
+
+    concepts = load_concepts()
+
+    concept_data = next(
+        (item for item in concepts if item["id"] == concept_id),
+        None,
+    )
+
+    if concept_data is None:
+        return []
+
+    concept = Concept.model_validate(concept_data)
+    chunks = retrieve(concept_id)
+    questions = generate_quiz(concept, chunks)
+
+    GENERATED_QS[concept_id] = questions
+
+    return questions
 
 # Vanha koodi talteen perhaps
 '''

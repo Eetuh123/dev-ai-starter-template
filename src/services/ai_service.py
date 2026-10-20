@@ -84,7 +84,7 @@ def start_assessment(goal_id: str | None) -> AssessmentStep:
 def get_assessment_concepts(goal_id: str):
     return assessment_get_concepts(goal_id)
 
-def get_questions(concept_id: str):
+def get_questions(concept_id: str) -> list[QuizQuestion]:
     return assessment_get_questions(concept_id)
 
 def submit_answer(

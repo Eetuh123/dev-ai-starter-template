@@ -75,6 +75,8 @@ def ask_agent(user_message):
         prompt = f"""
             You are a mathematics learning-goal classifier.
 
+            The student may use a full sentence, extra words, or spelling mistakes.
+            Identify the intended topic and match it to the closest concept below.
             Choose the single best matching goal from this list.
 
             Available goals:
