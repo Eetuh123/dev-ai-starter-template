@@ -88,15 +88,47 @@ def load_concepts():
     with open(CONCEPTS_FILE, "r", encoding="utf-8") as file:
         return json.load(file)
 
+MAX_DEPTH = 3   # how many levels below the goal we walk
+MAX_TOPICS = 8  # never assess more topics than this
 
-def get_assessment_concepts(goal_id: str):
-    concepts = load_concepts()
-
-    for concept in concepts:
-        if concept["id"] == goal_id:
-            return concept["prerequisites"]
-
-    return []
+def get_assessment_concepts(
+    goal_id: str,
+    max_depth: int = MAX_DEPTH,
+    max_topics: int = MAX_TOPICS,
+) -> list[str]:
+    """
+    Collect the prerequisites of a goal, nearest first.
+ 
+    Walks the concept map level by level (breadth first) from the goal downwards.
+    Every topic appears only once even if several paths lead to it, and the walk
+    stops at max_depth levels or max_topics topics, whichever comes first.
+    """
+    prerequisites = {c["id"]: c["prerequisites"] for c in load_concepts()}
+ 
+    if goal_id not in prerequisites:
+        return []
+ 
+    found = []
+    seen = {goal_id}  # also protects against cycles in the map
+    current_level = [goal_id]
+ 
+    for _ in range(max_depth):
+        next_level = []
+        for concept_id in current_level:
+            for prereq_id in prerequisites[concept_id]:
+                if prereq_id in seen or prereq_id not in prerequisites:
+                    continue
+                seen.add(prereq_id)
+                found.append(prereq_id)
+                if len(found) >= max_topics:
+                    return found
+                next_level.append(prereq_id)
+        current_level = next_level
+ 
+    return found
+ 
+def get_questions(concept_id: str) -> list[QuizQuestion]:
+    return DEMO_QUESTIONS.get(concept_id, [])
 
 def get_questions(concept_id: str) -> list[QuizQuestion]:
     return DEMO_QUESTIONS.get(concept_id, [])
