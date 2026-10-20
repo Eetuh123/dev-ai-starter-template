@@ -26,16 +26,17 @@ class OllamaModelClient:
         self.model_name = model_name or config.model_name
         self._client = ollama.Client(host=self.base_url)
 
-    def generate(self, prompt: str) -> str:
-        """
-        Sends a user prompt to local Ollama model and returns generated response text.
-        
-        Raises ModelClientError subclass if connection or execution fails.
-        """
+        def generate(self, prompt: str, format: dict | str | None = None) -> str:    
+            """
+            Sends a user prompt to local Ollama model and returns generated response text.
+            
+            Raises ModelClientError subclass if connection or execution fails.
+            """
         try:
             response = self._client.chat(
                 model=self.model_name,
-                messages=[{"role": "user", "content": prompt}],
+                messages=[{"role": "user", "content": "prompt"}],
+                format=format
             )
             
             # Standardize extraction from dict or chat response object

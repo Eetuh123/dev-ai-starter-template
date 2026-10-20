@@ -54,10 +54,6 @@ def get_questions(concept_id: str) -> list[QuizQuestion]:
     if concept_id in GENERATED_QS:
         return GENERATED_QS[concept_id]
 
-def get_questions(concept_id: str) -> list[QuizQuestion]:
-    if concept_id in GENERATED_QS:
-        return GENERATED_QS[concept_id]
-
     concepts = load_concepts()
 
     concept_data = next(
