@@ -18,14 +18,24 @@ class ConceptProgress(BaseModel): # Users status with any concept
     concept_id: str
     status: Literal["known", "missing", "untested"] = "untested"
     quiz_scores: list[bool] = []
-    
-class RagChunk(BaseModel): # One retrieved textbook passage / Lauri
-    id: str  # chunk id, for citing
+
+
+
+# One retrieved textbook passage / Lauri
+# chunk id, for citing
+# Markdown + LaTeX, formulas inline
+# "Caulus"
+# "3.6 The Chain Rule"
+# how relevant retrueval tought it was
+class RagChunk(BaseModel):
+    id: str
     concept_id: str
-    text: str # Markdown + LaTeX, formulas inline
-    book: str # "Caulus"
-    section: str # "3.6 The Chain Rule"
-    score: float # how relevant retrueval tought it was
+    text: str
+    book: str
+    section: str
+    score: float
+    source_url: str = ""
+    
     
 class Lesson(BaseModel):
     concept_id: str
