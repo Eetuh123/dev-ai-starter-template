@@ -44,9 +44,9 @@
     "sources": [
       {
         "book_id": "college-algebra-2e",
-        "module_id": "m51239",
-        "module_title": "Real Numbers: Algebra Essentials",
-        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51239/index.cnxml"
+        "module_id": "m51248",
+        "module_title": "Rational Expressions",
+        "source_url": "https://github.com/openstax/osbooks-college-algebra-bundle/blob/main/modules/m51248/index.cnxml"
       }
     ],
     "name_fi": "Murtoluvut"

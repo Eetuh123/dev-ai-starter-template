@@ -30,3 +30,15 @@ Document your team's evaluation results below.
 
 ## Action Items & Improvements
 - [ ] Planned fix or enhancement based on evaluation findings.
+
+
+## Preliminary RAG Retrieval Tests
+
+- Chain rule: successful. The search returned the correct module,
+  chain rule formulas, and source references.
+- Fractions: did not meet the learning objective. The search mainly
+  returned properties of real numbers and order-of-operations material.
+- Planned correction: change the fractions skill's source to the
+  Rational Expressions module and repeat the retrieval test.
+
+These are development-stage observations, not final evaluation results.

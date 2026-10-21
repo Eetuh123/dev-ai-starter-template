@@ -17,7 +17,7 @@ DATABASE_DIR = (
 )
 
 MODEL_NAME = "intfloat/multilingual-e5-small"
-COLLECTION_NAME = "openstax_math_e5_v1"
+COLLECTION_NAME = "openstax_math_e5_v2"
 BATCH_SIZE = 32
 
 
