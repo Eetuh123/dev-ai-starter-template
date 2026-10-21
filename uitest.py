@@ -1,5 +1,10 @@
 import gradio as gr
+import difflib
+import json
+import re
+import html
 
+from src.config import config
 from src.services.ai_service import (
     list_goals,
     start_assessment,
@@ -9,6 +14,81 @@ from src.services.ai_service import (
     get_questions,
     generate_response,
 )
+
+css = """
+.learning-path {
+    padding: 24px;
+    border: 1px solid;
+    color: #3F3F46;
+    border-radius: 18px;
+    text-align: center;
+}
+
+.path-goal {
+    padding: 20px;
+    border: 1px solid #FF9633;
+    border-radius: 14px;
+}
+
+.path-goal-title {
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.path-goal-subtitle {
+    font-size: 13px;
+    opacity: 0.7;
+    margin-top: 3px;
+}
+
+.path-connector { 
+    height: 24px;
+    width: 1.5px;
+    margin: 0 auto;
+    background: #9ba5bd; 
+}
+
+.path-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    opacity: 0.7;
+    font-weight: 700;
+}
+
+.path-subjects {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.path-subject {
+    border: 1px solid #FF9633;
+    border-radius: 12px;
+    padding: 16px 10px;
+    display: grid;
+        grid-template-columns: repeat(auto-fit);
+        gap: 12px;
+}
+
+.path-subject-name {
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.path-status {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 20px;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+@media (max-width: 520px) {
+    .path-subjects { grid-template-columns: 1fr; }
+
+    .learning-path { padding: 14px; }
+}
+"""
 
 def _question_text(question) -> str:
     if question is None:
@@ -49,13 +129,6 @@ def _material_markdown(result) -> str:
             )
     return "\n\n".join(parts)
 
-import difflib
-import json
-import re
-
-from src.config import config
-
-
 def _questions_markdown(concept_id):
     """Generate questions for one topic. Never raises, shows the error instead."""
     try:
@@ -68,12 +141,10 @@ def _questions_markdown(concept_id):
         f"**Q{i}:** {q.question}" for i, q in enumerate(questions, start=1)
     )
 
-
 def _make_loader(concept_id):
     def load():
         return _questions_markdown(concept_id)
     return load
-
 
 def _rank_goals(text, goals):
     """Score every concept against the user's text. Returns [(score, concept)] best first."""
@@ -120,6 +191,54 @@ def _rank_goals(text, goals):
 
     ranked.sort(key=lambda item: item[0], reverse=True)
     return ranked
+
+def _learning_tree(goal_id):
+    goals = list_goals()
+    concepts_by_id = {concept.id: concept for concept in goals}
+    prerequisite_ids = get_assessment_concepts(goal_id)
+    goal = concepts_by_id.get(goal_id)
+
+    if not goal: return "<p>Could not find the selected learning goal.</p>"
+
+    goal_name = html.escape(goal.name)
+
+    if prerequisite_ids:
+        cards = ""
+
+        for concept_id in prerequisite_ids:
+            concept = concepts_by_id.get(concept_id)
+            name = concept.name if concept else concept_id.replace(
+                "_", " "
+            ).title()
+            name = html.escape(name)
+
+            cards += f"""
+                <div class="path-subject">
+                    <div class="path-subject-name">{name}</div>
+                    <div class="path-status">Active/ Not started</div>
+                </div>
+            """
+    else:
+        cards = """
+            <p class="path-empty">
+                No prerequisite subjects found for this goal.
+            </p>
+        """
+
+    return f"""
+    <div class="learning-path">
+        <div class="path-goal">
+            <div class="path-goal-subtitle">Learning goal:</div>
+            <div class="path-goal-title">{goal_name}</div>
+        </div>
+
+        <div class="path-connector"></div>
+        <div class="path-label">PREREQUISITES</div>
+        <div class="path-connector"></div>
+
+        <div class="path-subjects">{cards}</div>
+    </div>
+    """
 
 def ask_agent(user_message):
     if not user_message or not user_message.strip():
@@ -204,93 +323,109 @@ def ask_agent(user_message):
         if concept_id in concepts_by_id
     ]
 
-    # Styling works sometimes??
+    '''
+    Bullet point list of prerequisites
     response_text = (
-        f"Your learning goal: **{matched_goal.name}**\n\n"
-        "Study these prerequisite subjects first:\n\n"
-        + "\n".join(f"- {name}" for name in subject_names)
-        + "\n\nThe assessment tabs below contain questions for each subject."
-    )
+            f"Your learning goal: **{matched_goal.name}**\n\n"
+            "Study these prerequisite subjects first:\n\n"
+            + "\n".join(f"- {name}" for name in subject_names)
+            + "\n\nThe assessment tabs below contain questions for each subject."
+        )
+    '''
+    response_text = ""
 
     return response_text, matched_goal.id
 
 def build_ui() -> gr.Blocks:
-    with gr.Blocks(title="Turbo Super Study Helper") as demo:
-        gr.Markdown("# Turbo Super Study Helper")
-        gr.Markdown("Skeleton version, running on fake data.")
+    with gr.Blocks(title="Turbo Super Study Helper", css=css) as demo:
+        with gr.Row():
+            gr.Column(scale=1)  # Spacers for centering
+            with gr.Column(scale=2):
+                gr.Markdown("# Turbo Super Study Helper")
+                gr.Markdown("Skeleton version, running on fake data.")
 
-        user_input = gr.Textbox(
-            label="What do you want to learn?",
-            placeholder="e.g. I want to learn the chain rule",
-        )
+                user_input = gr.Textbox(
+                    label="What do you want to learn?",
+                    placeholder="e.g. I want to learn the chain rule",
+                )
 
-        ask_btn = gr.Button(
-            "Ask Turbo Super Study Helper",
-            variant="primary",
-        )
+                ask_btn = gr.Button(
+                    "Ask Turbo Super Study Helper",
+                    variant="primary",
+                )
 
-        agent_output = gr.Markdown()
-        goal_state = gr.State(None)
-        progress_state = gr.State({})
+                agent_output = gr.Markdown()
+                goal_state = gr.State(None)
+                progress_state = gr.State({})
+                learning_tree = gr.HTML()
 
-        ask_btn.click(
-            fn=ask_agent,
-            inputs=user_input,
-            outputs=[agent_output, goal_state],
-        )
+                def ask_and_build_tree(user_message):
+                    response_text, goal_id = ask_agent(user_message)
+                    if not goal_id: return response_text, None, ""
 
-        @gr.render(inputs=goal_state)
-        def render_assessments(goal_id):
-            if not goal_id: return
+                    tree = _learning_tree(goal_id)
+                    return response_text, goal_id, tree
 
-            prerequisite_ids = get_assessment_concepts(goal_id)
 
-            if not prerequisite_ids:
-                gr.Markdown("No prerequisite subjects found.")
-                return
+                ask_btn.click(
+                    fn=ask_and_build_tree,
+                    inputs=user_input,
+                    outputs=[agent_output, goal_state, learning_tree],
+                )
 
-            concepts_by_id = {concept.id: concept for concept in list_goals()}
+                @gr.render(inputs=goal_state)
+                def render_assessments(goal_id):
+                    if not goal_id: return
 
-            first_tab = True
-            with gr.Tabs():
-                for concept_id in prerequisite_ids:
-                    concept = concepts_by_id.get(concept_id)
+                    prerequisite_ids = get_assessment_concepts(goal_id)
 
-                    subject_name = (
-                        concept.name
-                        if concept
-                        else concept_id.replace("_", " ").title()
-                    )
+                    if not prerequisite_ids:
+                        gr.Markdown("No prerequisite subjects found.")
+                        return
 
-                    with gr.Tab(subject_name):
-                        if first_tab:
-                            first_tab = False
-                            initial = _questions_markdown(concept_id)
-                            questions_md = gr.Markdown(initial)
-                        else:
-                            questions_md = gr.Markdown(
-                                "Questions for this topic are generated when you click the button."
-                            )
-                            load_btn = gr.Button("Generate questions")
-                            load_btn.click(
-                                fn=_make_loader(concept_id),
-                                inputs=None,
-                                outputs=questions_md,
+                    concepts_by_id = {concept.id: concept for concept in list_goals()}
+
+                    first_tab = True
+                    with gr.Tabs():
+                        for concept_id in prerequisite_ids:
+                            concept = concepts_by_id.get(concept_id)
+
+                            subject_name = (
+                                concept.name
+                                if concept
+                                else concept_id.replace("_", " ").title()
                             )
 
-        material_btn = gr.Button("Get study material")
-        material_md = gr.Markdown()
+                            with gr.Tab(subject_name):
+                                if first_tab:
+                                    first_tab = False
+                                    initial = _questions_markdown(concept_id)
+                                    questions_md = gr.Markdown(initial)
+                                else:
+                                    questions_md = gr.Markdown(
+                                        "Questions for this topic are generated when you click the button."
+                                    )
+                                    load_btn = gr.Button("Generate questions")
+                                    load_btn.click(
+                                        fn=_make_loader(concept_id),
+                                        inputs=None,
+                                        outputs=questions_md,
+                                    )
 
-        def on_material(goal_id, progress):
-            if not goal_id: return "Please enter a learning goal first."
+                material_btn = gr.Button("Get study material")
+                material_md = gr.Markdown()
 
-            result = get_study_material(goal_id, progress)
-            return _material_markdown(result)
+                def on_material(goal_id, progress):
+                    if not goal_id: return "Please enter a learning goal first."
 
-        material_btn.click(
-            fn=on_material,
-            inputs=[goal_state, progress_state],
-            outputs=material_md,
-        )
+                    result = get_study_material(goal_id, progress)
+                    return _material_markdown(result)
+
+                material_btn.click(
+                    fn=on_material,
+                    inputs=[goal_state, progress_state],
+                    outputs=material_md,
+                )
+            gr.Column(scale=1)
 
     return demo
