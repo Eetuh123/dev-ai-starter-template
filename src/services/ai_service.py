@@ -59,6 +59,10 @@ def list_goals() -> list[Concept]:
         # OSError: file missing. ValueError: bad JSON or Pydantic validation error.
         return []
 
+def get_progress() -> dict[str, ConceptProgress]:
+    """Saved progress from disk, so the UI can continue where the user left off."""
+    return load_progress()
+
 def _concepts_by_id() -> dict[str, Concept]:
     return {c.id: c for c in load_concept_map()}
 

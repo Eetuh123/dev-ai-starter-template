@@ -12,7 +12,7 @@ def load_concepts():
         return json.load(file)
 
 MAX_DEPTH = 3   # how many levels below the goal we walk
-MAX_TOPICS = 8  # never assess more topics than this
+MAX_TOPICS = 12  # never assess more topics than this
 
 def get_assessment_concepts(
     goal_id: str,
@@ -50,10 +50,6 @@ def get_assessment_concepts(
  
     return found
  
-def get_questions(concept_id: str) -> list[QuizQuestion]:
-    if concept_id in GENERATED_QS:
-        return GENERATED_QS[concept_id]
-
 def get_questions(concept_id: str) -> list[QuizQuestion]:
     if concept_id in GENERATED_QS:
         return GENERATED_QS[concept_id]

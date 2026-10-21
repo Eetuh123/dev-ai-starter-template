@@ -13,6 +13,7 @@ class QuizQuestion(BaseModel): # Quizz question format / Fei
     question:  str # "Diffrentiate sin(x^2)"
     answer: str # 2*x*cos(x**2)"  (SymPy-parseable)
     difficulty: int = Field(ge=1, le=3)
+    task: str = "" # how it was made: evaluate, simplify, expand, factor, solve, differentiate, limit
     
 class ConceptProgress(BaseModel): # Users status with any concept
     concept_id: str
