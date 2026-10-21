@@ -18,6 +18,7 @@ from src.capabilities.verifier import verify
 from src.services.assessment import (
     get_assessment_concepts as assessment_get_concepts,
     get_questions as assessment_get_questions,
+    find_gaps,
 )
 from src.services.lesson import generate_lesson
 from src.services.quiz import generate_quiz, check_answer
@@ -58,6 +59,10 @@ def list_goals() -> list[Concept]:
         # OSError: file missing. ValueError: bad JSON or Pydantic validation error.
         return []
 
+def get_progress() -> dict[str, ConceptProgress]:
+    """Saved progress from disk, so the UI can continue where the user left off."""
+    return load_progress()
+
 def _concepts_by_id() -> dict[str, Concept]:
     return {c.id: c for c in load_concept_map()}
 
@@ -84,8 +89,14 @@ def start_assessment(goal_id: str | None) -> AssessmentStep:
 def get_assessment_concepts(goal_id: str):
     return assessment_get_concepts(goal_id)
 
-def get_questions(concept_id: str):
+def get_questions(concept_id: str) -> list[QuizQuestion]:
     return assessment_get_questions(concept_id)
+
+def get_assessment_questions(goal_id: str) -> list[QuizQuestion]:
+    questions = []
+    for concept_id in get_assessment_concepts(goal_id):
+        questions.extend(get_questions(concept_id))
+    return questions
 
 def submit_answer(
     goal_id: str,
@@ -107,7 +118,7 @@ def submit_answer(
     entry = progress.get(question.concept_id) or ConceptProgress(
         concept_id=question.concept_id)
     entry.quiz_scores.append(correct)
-    entry.status = "known" if correct else "missing"
+    entry.status = "known" if all(entry.quiz_scores) else "missing"
 
     progress[question.concept_id] = entry
     save_progress(progress)
@@ -128,7 +139,7 @@ def get_study_material(goal_id: str, progress: dict[str, ConceptProgress]) -> St
 
         # tällä hetkellä ei ole find_gaps()
         # for concept_id in find_gaps(goal_id, progress):
-        for concept_id in get_assessment_concepts(goal_id):
+        for concept_id in find_gaps(goal_id, progress):
             concept = concepts.get(concept_id)
             if concept is None: continue
 
