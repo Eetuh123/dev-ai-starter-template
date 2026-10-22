@@ -206,6 +206,10 @@ Output: `data/rag/chunks.jsonl`.
 Only modules referenced in the concept map are included in the RAG index.
 
 #### Build the Chroma index
+Download Chromadb using conda-forge:
+```bash
+conda install conda-forge::chromadb
+```
 
 Run:
 
