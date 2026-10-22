@@ -10,6 +10,7 @@ from src.services.ai_service import (
     get_progress,
     start_assessment,
     submit_answer,
+    start_topic,
     get_study_material,
     get_assessment_concepts,
     get_questions,
@@ -137,7 +138,8 @@ import re
 from src.config import config
 
 
-QUESTIONS_PER_TOPIC = 5  # generate_quiz returns at most 5 questions
+QUESTIONS_PER_TOPIC = 3  # 2 questions decide a topic, the 3rd only appears when the result is unclear
+FIRST_QUESTIONS = 2      # how many questions are shown at the start
 
 # Gradio only renders $$...$$ by default. Questions and lessons also use inline $...$.
 LATEX_DELIMITERS = [
@@ -147,49 +149,59 @@ LATEX_DELIMITERS = [
 
 
 def _make_loader(concept_id):
-    """Button handler: generate the questions for one topic and reveal the answer boxes.
+    """Button handler: generate the questions for one topic and reveal the first answer boxes.
 
-    Returns values for: [questions_state, status_md, load_btn, group_1, question_md_1, group_2, ...]
+    Returns values for: [questions_state, status_md, load_btn, progress_state, group_1, question_md_1, group_2, ...]
     """
-    def load():
+    def load(progress):
         try:
             questions = get_questions(concept_id)
         except Exception as error:
             hidden = [gr.update(visible=False), ""] * QUESTIONS_PER_TOPIC
-            return [[], f"**Could not generate questions:** {error}", gr.update(visible=True), *hidden]
+            return [[], f"**Could not generate questions:** {error}", gr.update(visible=True), progress, *hidden]
 
         if not questions:
             hidden = [gr.update(visible=False), ""] * QUESTIONS_PER_TOPIC
-            return [[], "No questions available for this topic.", gr.update(visible=True), *hidden]
+            return [[], "No questions available for this topic.", gr.update(visible=True), progress, *hidden]
+
+        # A new round for this topic: old answers are cleared so they cannot mix with the new ones.
+        progress = start_topic(progress, concept_id)
 
         slots = []
         for i in range(QUESTIONS_PER_TOPIC):
-            if i < len(questions):
+            if i < min(FIRST_QUESTIONS, len(questions)):
                 slots += [gr.update(visible=True), f"**Q{i + 1}:** {questions[i].question}"]
+            elif i < len(questions):
+                # Prepared for later, shown only if the first answers are mixed.
+                slots += [gr.update(visible=False), f"**Q{i + 1}:** {questions[i].question}"]
             else:
                 slots += [gr.update(visible=False), ""]
 
-        return [questions, "Answer the questions below.", gr.update(visible=False), *slots]
+        return [questions, "Answer the questions below.", gr.update(visible=False), progress, *slots]
     return load
 
 
 def _make_checker(index):
     """Answer handler for question number `index` of a topic.
 
-    Returns values for: [progress_state, result_md, check_btn, answer_box]
+    Returns values for: [progress_state, result_md, check_btn, answer_box, next_group]
     """
     def check(goal_id, progress, questions, answer):
         if index >= len(questions):
-            return progress, "", gr.update(), gr.update()
+            return progress, "", gr.update(), gr.update(), gr.update()
 
         step = submit_answer(goal_id, progress, questions[index], answer)
 
         # Empty answer: submit_answer hands the question back, so let the user try again.
         if step.question is not None:
-            return step.progress, step.message, gr.update(), gr.update()
+            return step.progress, step.message, gr.update(), gr.update(), gr.update()
+
+        # Mixed results: show the next question as the tie-breaker.
+        more = step.topic_status == "untested" and index + 1 < len(questions)
+        next_group = gr.update(visible=True) if more else gr.update()
 
         # Answered: lock the box so one question cannot be scored twice.
-        return step.progress, step.message, gr.update(interactive=False), gr.update(interactive=False)
+        return step.progress, step.message, gr.update(interactive=False), gr.update(interactive=False), next_group
     return check
 
 
@@ -454,25 +466,32 @@ def build_ui() -> gr.Blocks:
 
                                 # Fixed answer slots, hidden until the questions exist.
                                 slots = []
+                                groups = []
+                                parts = []
                                 for i in range(QUESTIONS_PER_TOPIC):
                                     with gr.Group(visible=False) as group:
                                         question_md = gr.Markdown(latex_delimiters=LATEX_DELIMITERS)
                                         answer_box = gr.Textbox(label="Your answer")
                                         check_btn = gr.Button("Check answer")
                                         result_md = gr.Markdown()
+                                    groups.append(group)
+                                    parts.append((check_btn, answer_box, result_md))
+                                    slots += [group, question_md]
 
+                                for i, (check_btn, answer_box, result_md) in enumerate(parts):
+                                    # The last question has no next group; it points at itself, unchanged.
+                                    next_group = groups[i + 1] if i + 1 < len(groups) else groups[i]
                                     gr.on(
                                         triggers=[check_btn.click, answer_box.submit],
                                         fn=_make_checker(i),
                                         inputs=[goal_state, progress_state, questions_state, answer_box],
-                                        outputs=[progress_state, result_md, check_btn, answer_box],
+                                        outputs=[progress_state, result_md, check_btn, answer_box, next_group],
                                     )
-                                    slots += [group, question_md]
 
                                 load_btn.click(
                                     fn=_make_loader(concept_id),
-                                    inputs=None,
-                                    outputs=[questions_state, status_md, load_btn, *slots],
+                                    inputs=progress_state,
+                                    outputs=[questions_state, status_md, load_btn, progress_state, *slots],
                                 )
 
                 material_btn = gr.Button("Get study material")

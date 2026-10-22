@@ -19,6 +19,8 @@ from src.services.assessment import (
     get_assessment_concepts as assessment_get_concepts,
     get_questions as assessment_get_questions,
     find_gaps,
+    topic_status,
+    start_topic as assessment_start_topic,
 )
 from src.services.lesson import generate_lesson
 from src.services.quiz import generate_quiz, check_answer
@@ -33,6 +35,8 @@ class AssessmentStep(BaseModel):
     progress: dict[str, ConceptProgress] = {}
     question: QuizQuestion | None = None
     message: str = ""
+    # "known" / "missing" once the topic is decided, "untested" while more answers are needed.
+    topic_status: str = "untested"
 
 
 class StudyItem(BaseModel):
@@ -92,6 +96,14 @@ def get_assessment_concepts(goal_id: str):
 def get_questions(concept_id: str) -> list[QuizQuestion]:
     return assessment_get_questions(concept_id)
 
+def start_topic(
+    progress: dict[str, ConceptProgress], concept_id: str
+) -> dict[str, ConceptProgress]:
+    """A new assessment round for one topic: clear its old answers and save."""
+    assessment_start_topic(progress, concept_id)
+    save_progress(progress)
+    return progress
+
 def get_assessment_questions(goal_id: str) -> list[QuizQuestion]:
     questions = []
     for concept_id in get_assessment_concepts(goal_id):
@@ -118,7 +130,11 @@ def submit_answer(
     entry = progress.get(question.concept_id) or ConceptProgress(
         concept_id=question.concept_id)
     entry.quiz_scores.append(correct)
-    entry.status = "known" if all(entry.quiz_scores) else "missing"
+
+    # 2 answers decide a clear topic, a split result asks one more question.
+    status = topic_status(entry.quiz_scores, len(get_questions(question.concept_id)))
+    if status != "untested":
+        entry.status = status
 
     progress[question.concept_id] = entry
     save_progress(progress)
@@ -128,8 +144,13 @@ def submit_answer(
         if correct
         else f"Not quite. Expected: `{question.answer}`")
 
-    return AssessmentStep(progress=progress, question=None, 
-                          message=message)
+    if status == "untested" and len(entry.quiz_scores) >= 2:
+        message += "\n\nThe results are mixed, so there is one more question."
+    elif status != "untested":
+        message += f"\n\n**Topic result: {status}.**"
+
+    return AssessmentStep(progress=progress, question=None,
+                          message=message, topic_status=status)
 
 def get_study_material(goal_id: str, progress: dict[str, ConceptProgress]) -> StudyMaterial:
     """For each missing concept: retrieve -> lesson -> verify -> quiz."""
