@@ -237,12 +237,14 @@ TEMPLATES = {
         _SLOPE,
     ],
     "functions": [
-        ("evaluate", "{a}*x{b:+d}", "{p}", 1, "a=2..9 b=-9..9!0 p=-5..6"),
-        ("evaluate", "x^2{b:+d}*x{c:+d}", "{p}", 2, "b=-6..6!0 c=-6..6!0 p=-4..5"),
-        ("evaluate", "{a}*x^2 - {b}", "{p}", 2, "a=2..4 b=1..9 p=-4..5"),
-        ("evaluate", "sqrt(x{a:+d})", "{p}", 2, "s=1..6 a=1..6 p:=s*s-a"),
-        ("evaluate", "{a}/(x{b:+d})", "{p}", 2, "a=1..12 b=-5..5!0 p=-4..6 ?p+b!=0"),
-        ("evaluate", "x^3 - {a}*x", "{p}", 3, "a=1..6 p=-3..4"),
+        ("evaluate", "x^2{a:+d}", "{p}", 1, "a=-9..9!0 p=-6..6",
+         {"text": "Let $f(x) = x^2{a:+d}$. Find $f({p})$."}),
+        ("evaluate", "{a}*x^3{b:+d}*x", "{p}", 3, "a=2..3 b=-5..5!0 p=-3..3",
+         {"text": "Let $f(x) = {a}x^3{b:+d}x$. Find $f({p})$."}),
+        ("evaluate", "abs(x{a:+d})", "{p}", 2, "a=-6..6!0 p=-8..8",
+         {"text": r"Let $f(x) = |x{a:+d}|$. Find $f({p})$."}),
+        ("evaluate", "({a}*({p}){b:+d}) + ({a}*({q}){b:+d})", None, 2, "a=2..6 b=-9..9!0 p=-4..4 q=-4..4 ?p!=q",
+         {"text": "Let $f(x) = {a}x{b:+d}$. Find $f({p}) + f({q})$."}),
     ],
     "domain_range": [
         ("evaluate", "sqrt(x{a:+d})", "{p}", 2, "s=1..6 a=1..6 p:=s*s-a"),
@@ -561,8 +563,7 @@ MORE.update({
         ("evaluate", "sqrt({a}) + sqrt({n})", None, 2, "k=2..4 n=2,3,5 a:=k*k*n"),
         ("evaluate", "sqrt({a}) - sqrt({n})", None, 2, "k=2..4 n=2,3,5 a:=k*k*n"),
         ("evaluate", "({a} + sqrt({n}))*({a} - sqrt({n}))", None, 3, "a=3..9 n=2,3,5,7"),
-        ("evaluate", "(sqrt({a}) + {b})^2", None, 3, "a=2,3,5 b=1..4"),
-        ("evaluate", "{a}/sqrt({n})", None, 3, "n=2,3,5 a=2..9"),
+        ("evaluate", "(sqrt({a}) + {b})^2 - 2*{b}*sqrt({a})", None, 3, "a=2,3,5 b=1..4"),
     ],
     "rational_exponents": [
         ("evaluate", "{b}^(1/2) + {c}^(1/3)", None, 2, "b=4,9,16,25 c=8,27,64"),
@@ -620,7 +621,7 @@ MORE.update({
 MORE.update({
     "quadratic_equations": [
         ("solve", "(x{a:+d})^2 = 0", None, 2, "a=-9..9!0"),
-        ("evaluate", "{b}^2 - 4*{a}*{c}", None, 2, "a=2..3 b=-6..6!0,1,-1 c=-5..5!0",
+        ("evaluate", "({b})^2 - 4*{a}*({c})", None, 2, "a=2..3 b=-6..6!0,1,-1 c=-5..5!0",
          {"text": "Find the discriminant $b^2 - 4ac$ of $ {a}x^2{b:+d}x{c:+d} = 0$."}),
         ("evaluate", "(-({b}) + sqrt(({b})^2 - 4*{a}*({c})))/(2*{a})", None, 3,
          "a=2..3 r=-4..4 t=-4..4 ?r>t ?r+t!=0 ?r*t!=0 b:=-a*(r+t) c:=a*r*t",
@@ -711,7 +712,7 @@ MORE.update({
         ("evaluate", "{f1} - {m}*{x1}", None, 2, "m=2..5 x1=1..5 b=-9..9!0 f1:=m*x1+b",
          {"text": "A line has slope ${m}$ and passes through $({x1}, {f1})$. Find its $y$-intercept."}),
         ("evaluate", "{b} + {m}*x", "{p}", 1, "b=10..60 m=5..30 p=1..8",
-         {"text": "A plumber charges ${b}$ for the call-out plus ${m}$ per hour. Find the cost of ${p}$ hours."}),
+         {"text": "A plumber charges ${b}$ for the call-out plus ${m}$ per hour. Find the cost of ${p}$ hour(s)."}),
     ],
     "line_equations": [
         ("evaluate", "{f1} - {m}*{x1}", None, 2, "m=-4..4!0 x1=-5..5!0 b=-9..9!0 f1:=m*x1+b",
@@ -728,7 +729,7 @@ MORE.update({
          {"text": "Find the $x$-coordinate of the vertex of $y = x^2{b:+d}x{c:+d}$."}),
         ("evaluate", "{a}*x^2{b:+d}*x{c:+d}", "{p}", 2, "a=2..3 b=-6..6!0,1,-1 c=-9..9!0 p=-4..5",
          {"text": "A parabola is $y = {a}x^2{b:+d}x{c:+d}$. Find $y$ when $x = {p}$."}),
-        ("evaluate", "{b}^2 - 4*{a}*{c}", None, 2, "a=2..3 b=-6..6!0,1,-1 c=-5..5!0",
+        ("evaluate", "({b})^2 - 4*{a}*({c})", None, 2, "a=2..3 b=-6..6!0,1,-1 c=-5..5!0",
          {"text": "Find the discriminant of $y = {a}x^2{b:+d}x{c:+d}$."}),
         ("evaluate", "{a}^2", None, 2, "a=2..8 b:=2*a",
          {"text": "The height of a ball is $h = -t^2 + {b}t$. Find its maximum height."}),
@@ -783,9 +784,9 @@ MORE.update({
     ],
     "exponential_functions": [
         ("evaluate", "{a}*2^x", "{p}", 2, "a=100,200,500 p=1..5",
-         {"text": "A population of ${a}$ bacteria doubles every hour. How many are there after ${p}$ hours?"}),
+         {"text": "A population of ${a}$ bacteria doubles every hour. How many are there after ${p}$ hour(s)?"}),
         ("evaluate", "{a}*(1/2)^x", "{p}", 2, "a=80,160,320 p=1..4",
-         {"text": "A sample of ${a}$ grams halves every year. How much remains after ${p}$ years?"}),
+         {"text": "A sample of ${a}$ grams halves every year. How much remains after ${p}$ year(s)?"}),
         ("evaluate", "{b}^x", "{p}", 1, "b=2..5 p=0..4"),
         ("evaluate", "{b}^(-x)", "{p}", 2, "b=2..3 p=1..4"),
         ("evaluate", "{a}*2^(x/2)", "{p}", 2, "a=1..9 k=1..5 p:=2*k"),
@@ -935,7 +936,7 @@ MORE.update({
     ],
     "limit_simplification": _LIM_EXTRA[:4] + [
         ("limit", "(x^2{s:+d}*x{p:+d})/(x{r:+d})", "{nr}", 2, "r=1..6 t=1..6 s:=r+t p:=r*t nr:=-r"),
-        ("limit", "(x^2 - {q})/(x - {a})", "{a}", 2, "a=-9..-2 q:=a*a"),
+        ("limit", "(x^2 - {q})/(x{na:+d})", "{a}", 2, "a=-9..-2 q:=a*a na:=-a"),
     ],
     "continuity": _LIM_EXTRA[3:8] + [
         ("limit", "({a}*x^2{b:+d})", "{p}", 1, "a=2..4 b=-9..9!0 p=-3..4"),
@@ -1067,3 +1068,151 @@ MORE.update({
 
 for _topic, _extra in MORE.items():
     TEMPLATES[_topic] = list(TEMPLATES.get(_topic, [])) + list(_extra)
+
+
+# ----------------------------------------------------------------------------------------
+# Fixes and new templates (checked by hand and with SymPy)
+# ----------------------------------------------------------------------------------------
+
+NEW = {
+    "one_sided_limits": [
+        ("limit", "abs(x{na:+d})/(x{na:+d})", "{a}", 2, "a=-6..6 na:=-a", {"side": "+"}),
+        ("limit", "abs(x{na:+d})/(x{na:+d})", "{a}", 2, "a=-6..6 na:=-a", {"side": "-"}),
+        ("limit", "x*abs(x{na:+d})/(x{na:+d})", "{a}", 3, "a=2..8 na:=-a", {"side": "+"}),
+        ("limit", "x*abs(x{na:+d})/(x{na:+d})", "{a}", 3, "a=2..8 na:=-a", {"side": "-"}),
+        ("limit", "(x^2 - {q})/(x{na:+d})", "{a}", 2, "a=2..9 q:=a*a na:=-a", {"side": "+"}),
+        ("limit", "(x^2 - {q})/(x{na:+d})", "{a}", 2, "a=2..9 q:=a*a na:=-a", {"side": "-"}),
+        ("limit", "abs(x)/x", "0", 1, "", {"side": "+"}),
+        ("limit", "abs(x)/x", "0", 1, "", {"side": "-"}),
+        ("limit", "{a}*x^2{b:+d}*x{c:+d}", "{p}", 1, "a=1..4 b=-6..6!0 c=-9..9!0 p=-3..4", {"side": "+"}),
+        ("limit", "{a}*x^2{b:+d}*x{c:+d}", "{p}", 1, "a=1..4 b=-6..6!0 c=-9..9!0 p=-3..4", {"side": "-"}),
+    ],
+    "linear_inequalities": [
+        ("solve", "{a}*x{b:+d} = {c}", None, 1, "a=2..6 k=-6..9 b=-9..9!0 c:=a*k+b",
+         {"text": "The inequality ${a}x{b:+d} < {c}$ has the solutions $x < k$. Find $k$."}),
+        ("solve", "{c} - {a}*x = {d}", None, 2, "a=2..6 k=-6..9 c=1..12 d:=c-a*k",
+         {"text": "The inequality ${c} - {a}x > {d}$ has the solutions $x < k$. Find $k$."}),
+        ("solve", "{a}*x{b:+d} = {c}", None, 2, "a=2..5 k=-5..8 b=-9..9!0 c:=a*k+b",
+         {"text": r"The inequality ${a}x{b:+d} \ge {c}$ has the solutions $x \ge k$. Find $k$."}),
+        ("evaluate", "{k} + 1", None, 2, "a=2..6 k=-6..9 b=-9..9!0 c:=a*k+b",
+         {"text": "Find the smallest integer $x$ that satisfies ${a}x{b:+d} > {c}$."}),
+    ],
+    "word_problems": [
+        ("evaluate", "({s} + {d})/2", None, 2, "l=6..20 m=1..5 s:=l+m d:=l-m",
+         {"text": "Two numbers have the sum ${s}$ and the difference ${d}$. Find the larger number."}),
+        ("evaluate", "({P} - 2*{k})/4", None, 2, "w=3..12 k=1..6 P:=4*w+2*k",
+         {"text": "The length of a rectangle is ${k}$ more than its width, and its perimeter is ${P}$. Find the width."}),
+        ("evaluate", "({T} - {f})/{m}", None, 2, "n=2..12 f=10..50 m=5..20 T:=f+m*n",
+         {"text": "A gym charges a joining fee of ${f}$ plus ${m}$ per month. After how many months has a member paid ${T}$ in total?"}),
+        ("evaluate", "{d}/{t}", None, 1, "v=40..90 t=2..5 d:=v*t",
+         {"text": "A car travels ${d}$ km in ${t}$ hours at a constant speed. Find its speed in km per hour."}),
+        ("evaluate", "({S} - {k} - 2*{n})/2", None, 3, "b=5..20 k=2..8 n=2..6 S:=2*b+k+2*n",
+         {"text": "Anna is ${k}$ years older than Ben. In ${n}$ years the sum of their ages will be ${S}$. How old is Ben now?"}),
+    ],
+    "transformations": [
+        ("evaluate", "{a} + {h}", None, 1, "a=-5..5 b=-5..5 h=1..5",
+         {"text": "The graph of $y = f(x)$ passes through the point $({a}, {b})$. The graph of $y = f(x - {h})$ passes through the shifted point. Find its $x$-coordinate."}),
+        ("evaluate", "{b} + {k}", None, 1, "a=-5..5 b=-5..5 k=-6..6!0",
+         {"text": "The graph of $y = f(x)$ passes through the point $({a}, {b})$. The graph of $y = f(x){k:+d}$ passes through the shifted point. Find its $y$-coordinate."}),
+        ("evaluate", "0 - ({b})", None, 1, "a=-5..5 b=-6..6!0",
+         {"text": "The graph of $y = f(x)$ passes through the point $({a}, {b})$. The graph of $y = -f(x)$ is a reflection in the $x$-axis. Find the $y$-coordinate of the reflected point."}),
+        ("evaluate", "(x - {h})^2 + {k}", "{p}", 2, "h=1..5 k=1..6 p=-3..6",
+         {"text": "The graph of $y = x^2$ is shifted ${h}$ units to the right and ${k}$ units up. Find the value of the new function at $x = {p}$."}),
+        ("evaluate", "{c} * {b}", None, 1, "a=-5..5 b=-5..5!0 c=2..4",
+         {"text": "The graph of $y = f(x)$ passes through the point $({a}, {b})$. The graph of $y = {c}f(x)$ is stretched vertically. Find the $y$-coordinate of the point above $x = {a}$."}),
+        ("evaluate", "0 - {h}", None, 1, "h=1..8",
+         {"text": "The graph of $y = |x|$ is shifted ${h}$ units to the left. Find the $x$-coordinate of the vertex of the new graph."}),
+    ],
+    "exp_log_graphs": [
+        ("evaluate", "{a}*{b}^0", None, 1, "a=2..9 b=2..5",
+         {"text": r"Find the $y$-intercept of the graph of $y = {a} \cdot {b}^x$."}),
+        ("evaluate", "{c} + {a}*0", None, 2, "a=2..5 c=-6..6!0",
+         {"text": r"The graph of $y = {a} \cdot 2^x {c:+d}$ has a horizontal asymptote $y = k$. Find $k$."}),
+        ("evaluate", "{a} + 0*{a}", None, 2, "a=1..8 na:=-a",
+         {"text": r"The graph of $y = \ln(x{na:+d})$ has a vertical asymptote $x = k$. Find $k$."}),
+        ("evaluate", "{a} + 1", None, 2, "a=1..8 na:=-a",
+         {"text": r"Find the $x$-intercept of the graph of $y = \ln(x{na:+d})$."}),
+        ("evaluate", "ln({x})/ln({b})", None, 2, "b=2,3,5 k=1..3 x:=b**k",
+         {"text": r"The graph of $y = \log_{{{b}}} x$ passes through the point with $x = {x}$. Find its $y$-coordinate."}),
+        ("evaluate", "{a}*{b}^x", "{p}", 1, "a=2..5 b=2,3 p=0..4",
+         {"text": r"The graph of $y = {a} \cdot {b}^x$ passes through the point with $x = {p}$. Find its $y$-coordinate."}),
+    ],
+    "trig_equations": [
+        ("evaluate", "asin(1/2)", None, 1, "", {"text": r"Find the smallest positive solution of $\sin x = \frac{{1}}{{2}}$."}),
+        ("evaluate", "asin(sqrt(3)/2)", None, 2, "", {"text": r"Find the smallest positive solution of $\sin x = \frac{{\sqrt{{3}}}}{{2}}$."}),
+        ("evaluate", "acos(1/2)", None, 1, "", {"text": r"Find the smallest positive solution of $\cos x = \frac{{1}}{{2}}$."}),
+        ("evaluate", "acos(sqrt(2)/2)", None, 2, "", {"text": r"Find the smallest positive solution of $\cos x = \frac{{\sqrt{{2}}}}{{2}}$."}),
+        ("evaluate", "atan(1)", None, 1, "", {"text": r"Find the smallest positive solution of $\tan x = 1$."}),
+        ("evaluate", "atan(sqrt(3))", None, 2, "", {"text": r"Find the smallest positive solution of $\tan x = \sqrt{{3}}$."}),
+        ("evaluate", "asin(1/2)", None, 2, "", {"text": r"Find the smallest positive solution of $2\sin x = 1$."}),
+        ("evaluate", "acos(sqrt(3)/2)", None, 2, "", {"text": r"Find the smallest positive solution of $2\cos x = \sqrt{{3}}$."}),
+        ("evaluate", "asin(-1/2)", None, 3, "",
+         {"text": r"Find the solution of $\sin x = -\frac{{1}}{{2}}$ with $-\frac{{\pi}}{{2}} \le x \le \frac{{\pi}}{{2}}$."}),
+        ("evaluate", "acos(-1/2)", None, 3, "",
+         {"text": r"Find the solution of $\cos x = -\frac{{1}}{{2}}$ with $0 \le x \le \pi$."}),
+        ("evaluate", "pi/(4*{a})", None, 3, "a=2..5",
+         {"text": r"Find the smallest positive solution of $\tan({a}x) = 1$."}),
+        ("evaluate", "pi/(2*{a})", None, 3, "a=2..5",
+         {"text": r"Find the smallest positive solution of $\sin({a}x) = 1$."}),
+    ],
+    "limits_infinity": [
+        ("evaluate", "{a}/{c}", None, 2, "a=1..9 c=2..9 b=-9..9!0 e=-9..9!0",
+         {"text": r"Find $\lim_{{x \to \infty}} \frac{{{a}x{b:+d}}}{{{c}x{e:+d}}}$."}),
+        ("evaluate", "{a}/{c}", None, 2, "a=1..9 c=2..9 b=-9..9!0 e=-9..9!0",
+         {"text": r"Find $\lim_{{x \to \infty}} \frac{{{a}x^2{b:+d}x}}{{{c}x^2{e:+d}}}$."}),
+        ("evaluate", "0*{a}", None, 1, "a=1..9 b=-9..9!0 c=1..9",
+         {"text": r"Find $\lim_{{x \to \infty}} \frac{{{a}x{b:+d}}}{{x^2+{c}}}$."}),
+        ("evaluate", "{a}/{c}", None, 2, "a=1..9 c=2..9 b=-9..9!0 e=-9..9!0",
+         {"text": r"The graph of $f(x) = \frac{{{a}x{b:+d}}}{{{c}x{e:+d}}}$ has a horizontal asymptote $y = k$. Find $k$."}),
+        ("evaluate", "{a} + 0*{b}", None, 1, "a=1..9 b=2..9",
+         {"text": r"Find $\lim_{{x \to \infty}} \left({a} + \frac{{{b}}}{{x}}\right)$."}),
+    ],
+    "infinite_limits": [
+        ("solve", "x{a:+d} = 0", None, 1, "a=-9..9!0",
+         {"text": r"The graph of $f(x) = \frac{{1}}{{x{a:+d}}}$ has a vertical asymptote $x = k$. Find $k$."}),
+        ("solve", "{a}*x{b:+d} = 0", None, 2, "a=2..5 k=-5..5!0 b:=a*k",
+         {"text": r"The graph of $f(x) = \frac{{1}}{{{a}x{b:+d}}}$ has a vertical asymptote $x = k$. Find $k$."}),
+        ("evaluate", "2 - 1", None, 1, "a=-5..5!0 na:=-a",
+         {"text": r"Let $f(x) = \frac{{1}}{{(x{na:+d})^2}}$. Enter $1$ if $\lim_{{x \to {a}}} f(x) = +\infty$ and $-1$ if it is $-\infty$."}),
+        ("evaluate", "1 - 2", None, 1, "a=-5..5!0 na:=-a",
+         {"text": r"Let $f(x) = -\frac{{1}}{{(x{na:+d})^2}}$. Enter $1$ if $\lim_{{x \to {a}}} f(x) = +\infty$ and $-1$ if it is $-\infty$."}),
+        ("evaluate", "2 - 1", None, 2, "a=-5..5!0 na:=-a",
+         {"text": r"Enter $1$ if $\lim_{{x \to {a}^+}} \frac{{1}}{{x{na:+d}}} = +\infty$ and $-1$ if it is $-\infty$."}),
+        ("evaluate", "1 - 2", None, 2, "a=-5..5!0 na:=-a",
+         {"text": r"Enter $1$ if $\lim_{{x \to {a}^-}} \frac{{1}}{{x{na:+d}}} = +\infty$ and $-1$ if it is $-\infty$."}),
+    ],
+    "precise_limit": [
+        ("evaluate", "{e}/{a}", None, 2, "a=2..6 e=1..5 b=-9..9!0 c=-4..5 nc:=-c",
+         {"text": r"Let $f(x) = {a}x{b:+d}$ and $\lim_{{x \to {c}}} f(x) = L$. Find the largest $\delta$ such that $|f(x) - L| < {e}$ whenever $0 < |x{nc:+d}| < \delta$."}),
+        ("evaluate", "{e}/{a}", None, 1, "a=2..5 e=1..3",
+         {"text": r"Let $f(x) = {a}x$ and $\epsilon = {e}$. Find the largest $\delta$ such that $|f(x) - f(0)| < \epsilon$ whenever $|x| < \delta$."}),
+        ("limit", "{a}*x{b:+d}", "{c}", 1, "a=2..6 b=-9..9!0 c=-4..5",
+         {"text": r"Find $L = \lim_{{x \to {c}}} ({a}x{b:+d})$."}),
+        ("evaluate", "{e}*{a}", None, 2, "a=2..5 e=1..4",
+         {"text": r"For $f(x) = \frac{{x}}{{{a}}}$ we have $|f(x)| < {e}$ whenever $|x| < \delta$. Find the largest $\delta$."}),
+    ],
+    "implicit_derivatives": [
+        ("evaluate", "-{x0}/{y0}", None, 2, "t=0..3 x0:=[3,4,5,12][t] y0:=[4,3,12,5][t] r2:=x0*x0+y0*y0",
+         {"text": r"For the circle $x^2 + y^2 = {r2}$, find $\frac{{dy}}{{dx}}$ at the point $({x0}, {y0})$."}),
+        ("evaluate", "-{b}/{a}", None, 2, "a=2..4 b=1..6 k:=a*b",
+         {"text": r"For the curve $xy = {k}$, find $\frac{{dy}}{{dx}}$ at the point $({a}, {b})$."}),
+        ("evaluate", "{k}/(2*{b})", None, 3, "b=2,4,6 a=1,2 k:=b*b//a",
+         {"text": r"The curve $y^2 = {k}x$ passes through $({a}, {b})$. Find $\frac{{dy}}{{dx}}$ at this point."}),
+        ("evaluate", "-{x0}/{y0}", None, 2, "t=0..3 x0:=[-3,-4,-5,-12][t] y0:=[4,3,12,5][t] r2:=x0*x0+y0*y0",
+         {"text": r"For the circle $x^2 + y^2 = {r2}$, find $\frac{{dy}}{{dx}}$ at the point $({x0}, {y0})$."}),
+    ],
+}
+for _topic, _extra in NEW.items():
+    TEMPLATES[_topic] = list(TEMPLATES.get(_topic, [])) + list(_extra)
+
+# Old generic "Evaluate/Solve ..." templates do not fit these topics (they ask for plain algebra, not the
+# topic). Keep only templates that have their own wording.
+_OWN_WORDING_ONLY = {
+    "domain_range", "function_graphs", "function_composition", "inverse_functions",
+    "formula_rearrangement", "line_equations", "one_sided_limits",
+}
+for _topic in _OWN_WORDING_ONLY:
+    TEMPLATES[_topic] = [
+        t for t in TEMPLATES[_topic]
+        if len(t) > 5 and isinstance(t[5], dict) and ("text" in t[5] or "side" in t[5])
+    ]

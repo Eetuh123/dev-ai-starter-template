@@ -221,10 +221,13 @@ def _build_question(item, concept: Concept, number: int, allowed: tuple, substit
             point = _parse(at_text)
             if point.free_symbols or not (point.is_number and point.is_finite):
                 raise ValueError(f"'{label}': 'at' must be a finite number")
-            answer = sp.limit(value, X, point, dir="+-")
+            side = item.get("side", "+-")
+            if side not in ("+", "-", "+-"):
+                side = "+-"
+            answer = sp.limit(value, X, point, dir=side)
             if isinstance(answer, sp.Limit) or not (answer.is_number and answer.is_finite):
                 raise ValueError(f"'{label}' at {at_text} has no finite limit")
-            shown = f"Evaluate ${_latex(sp.Limit(written, X, point, dir='+-'))}$"
+            shown = f"Evaluate ${_latex(sp.Limit(written, X, point, dir=side))}$"
 
     key = _key(answer)
     if len(key) > 45:

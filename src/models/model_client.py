@@ -37,6 +37,8 @@ class OllamaModelClient:
                 model=self.model_name,
                 messages=[{"role": "user", "content": prompt}],
                 format=format,
+                think=False,                  # thinking models (qwen3.5) otherwise spend the budget thinking and return nothing
+                options={"num_ctx": 8192},    # the default context is small and cuts long prompts
             )
             
             # Standardize extraction from dict or chat response object
