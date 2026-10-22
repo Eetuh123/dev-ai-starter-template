@@ -57,7 +57,7 @@ User
 ## Model
 
 - Model used: llama3.2 (3B) via Ollama
-- Selection rationale: It is lightweight enough to run locally on normal student laptops, which keeps the app free and private. It is good enough for generating explanations and quiz questions from provided material. If quality is not sufficient, we will test a larger model such as qwen2.5:7b and compare results in our evaluation.
+- Selection rationale: llama3.2 (3B) is the initial local baseline. Preliminary testing produced mathematical errors even with retrieved source material. A comparison of correctness, explanation clarity, and response time will be used to justify the final model selection.
 
 ## Additional AI capability
 
@@ -76,7 +76,7 @@ RAG: A small local model can produce incorrect or made-up explanations, which is
 
 Memory: The core idea of the app is to know what the user already knows and what they are missing. Persistent state stores the user's knowledge map (known and missing prerequisite topics) and quiz results between sessions, so the assistant does not have to re-test the user every time and can continue from their current gaps.
 
-Verification step: After the local model generates study material and quizzes, the content is sent to a more capable external model (e.g. Claude via API) that fact-checks it against the retrieved sources and flags or corrects errors before the material is shown to the user. This combines the low cost and privacy of a local model with the accuracy of a stronger model, which is important because incorrect study material would teach the user wrong things.
+Verification step (planned): A stronger external model could check generated lessons against the retrieved sources. This integration is not implemented in the current version. The verifier returns an unverified status and displays a notice that generated content may contain mathematical errors.
 
 ## Setup
 
@@ -119,6 +119,140 @@ Make sure Ollama is installed and running locally, then pull your configured mod
 ```bash
 ollama run llama3.2
 ```
+
+### 4a. Prepare the book data and RAG index (Windows)
+
+Run the commands below from the project root with the Conda environment activated:
+
+```bash
+conda activate dev-ai-project
+```
+
+The current indexing script uses Windows `LOCALAPPDATA`. Other operating systems require a database path adjustment in `scripts/index_books.py` and a matching retrieval configuration.
+
+#### Download the source books
+
+Download both OpenStax repositories using **Code → Download ZIP**:
+
+- https://github.com/openstax/osbooks-college-algebra-bundle
+- https://github.com/openstax/osbooks-calculus-bundle
+
+Extract the repository folders into `data/books/raw/`.
+
+Check that these files exist directly at the following paths, without an extra nested repository folder:
+
+- `data/books/raw/osbooks-college-algebra-bundle-main/collections/college-algebra-2e.collection.xml`
+- `data/books/raw/osbooks-college-algebra-bundle-main/collections/precalculus-2e.collection.xml`
+- `data/books/raw/osbooks-calculus-bundle-main/collections/calculus-volume-1.collection.xml`
+
+Each repository folder must also contain its `modules` directory.
+
+The project uses three books: **College Algebra 2e**, **Precalculus 2e**, and **Calculus Volume 1**.
+
+#### Convert the books
+
+Pandoc must be installed and available in the active environment:
+
+```bash
+pandoc --version
+```
+
+Convert each book:
+
+```bash
+python scripts/convert_book.py --book algebra
+python scripts/convert_book.py --book precalculus
+python scripts/convert_book.py --book calculus
+```
+
+The conversion script also requires `scripts/convert_module.py`.
+
+The generated Markdown files contain LaTeX formulas and are saved in:
+
+- `data/books/processed/college-algebra-2e/`
+- `data/books/processed/precalculus-2e/`
+- `data/books/processed/calculus-volume-1/`
+
+Each folder includes `manifest.json` and `conversion_errors.json`. Check that the conversion reports zero failures.
+
+#### Create the text chunks
+
+Ensure that `.env` includes:
+
+```env
+CONCEPT_MAP_PATH=data/concepts.json
+```
+
+The concept map defines the skills, their prerequisites, and their source modules.
+
+Run:
+
+```bash
+python scripts/chunk_books.py
+```
+
+This reads the source modules referenced in `data/concepts.json`, splits their text into chunks, and attaches skill IDs and source references.
+
+Output: `data/rag/chunks.jsonl`.
+
+Only modules referenced in the concept map are included in the RAG index.
+
+#### Build the Chroma index
+
+Run:
+
+```bash
+python scripts/index_books.py
+```
+
+The first run downloads the embedding model `intfloat/multilingual-e5-small`. The script generates embeddings on the CPU and stores the text chunks and metadata in a persistent Chroma database.
+
+On Windows, the database is stored outside the project directory:
+
+```text
+%LOCALAPPDATA%\dev-ai-project\chroma
+```
+
+The collection name is `openstax_math_e5_v2`. Indexing and retrieval must use the same database path, collection name, and embedding model.
+
+Each team member must build the index on their own computer. Repeating indexing with the same input does not create duplicate chunks. If the input changes, the script rejects the existing collection and it must be rebuilt.
+
+#### Test retrieval
+
+Run:
+
+```bash
+python scripts/search_books.py "ketjusääntö"
+```
+
+The results should include **The Chain Rule** from **Calculus Volume 1**, module `m53581`, with source references.
+
+To test the retrieval function used by the application:
+
+```bash
+python -c "from src.capabilities.rag import retrieve; [print(c.book, c.section, c.source_url, sep='\n') for c in retrieve('chain_rule')]"
+```
+
+Retrieval works independently of Ollama. Generating study lessons requires Ollama and the configured language model.
+
+#### Files excluded from Git
+
+Keep the downloaded books, converted books, and generated RAG files out of Git. Ensure `.gitignore` contains:
+
+```gitignore
+/data/books/
+/data/rag/
+```
+
+Commit the scripts, `data/concepts.json`, dependency configuration, and documentation.
+
+#### Current limitations
+
+- Skill tags are assigned at module level, so retrieved chunks may cover a broader topic than the requested skill.
+- Images are represented by text descriptions, and some internal textbook references remain unresolved.
+- Fraction material mostly comes from a section on rational expressions and can be too advanced for beginners.
+- Generated lessons may contain mathematical errors despite using retrieved sources.
+- Automatic content verification is not implemented. Lessons are displayed as unverified.
 
 ### 5. Run the application
 
