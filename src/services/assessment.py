@@ -12,13 +12,14 @@ def load_concepts():
         return json.load(file)
 
 MAX_DEPTH = 3   # how many levels below the goal we walk
-MAX_TOPICS = 8   # never assess more topics than this
+MAX_TOPICS = 12  # never assess more topics than this
 
-# Per topic: ask 2 questions. Both right = known, both wrong = missing.
-# A split result is unclear, so a third question breaks the tie.
-# 8 topics * 2..3 questions = 16..24 questions in total.
-MIN_QUESTIONS = 2
-MAX_QUESTIONS = 3
+# Per topic: ask at least 5 questions. A topic is "known" when at least 80% of the answers are right.
+# After 5 answers it stops if the result is clear (4/5 or 5/5 = known). While 80% can still be
+# reached it asks more, up to 10 questions. When 80% can no longer be reached it is "missing".
+PASS_PERCENT = 80
+MIN_QUESTIONS = 5
+MAX_QUESTIONS = 10
 
 def get_assessment_concepts(
     goal_id: str,
@@ -56,28 +57,77 @@ def get_assessment_concepts(
  
     return found
  
+def build_tree(
+    goal_id: str,
+    max_depth: int = MAX_DEPTH,
+    max_topics: int = MAX_TOPICS,
+) -> dict | None:
+    """
+    The goal and its prerequisites as a tree: {"id": ..., "children": [...]}.
+
+    Same topics as get_assessment_concepts. A topic that several paths lead to appears once,
+    under the first parent that reaches it. None if the goal is not in the map.
+    """
+    prerequisites = {c["id"]: c["prerequisites"] for c in load_concepts()}
+    if goal_id not in prerequisites:
+        return None
+
+    root = {"id": goal_id, "children": []}
+    nodes = {goal_id: root}
+    seen = {goal_id}
+    level = [goal_id]
+    count = 0
+
+    for _ in range(max_depth):
+        next_level = []
+        for concept_id in level:
+            for prereq_id in prerequisites[concept_id]:
+                if prereq_id in seen or prereq_id not in prerequisites:
+                    continue
+                seen.add(prereq_id)
+                count += 1
+                node = {"id": prereq_id, "children": []}
+                nodes[concept_id]["children"].append(node)
+                nodes[prereq_id] = node
+                if count >= max_topics:
+                    return root
+                next_level.append(prereq_id)
+        level = next_level
+
+    return root
+
+
+def _spaced(items: list, count: int) -> list:
+    """`count` items spread evenly over the list (first and last included)."""
+    if count >= len(items):
+        return list(items)
+    if count == 1:
+        return [items[len(items) // 2]]
+    last = len(items) - 1
+    return [items[round(i * last / (count - 1))] for i in range(count)]
+
+
 def pick_assessment_questions(
     questions: list[QuizQuestion],
     count: int = MAX_QUESTIONS,
 ) -> list[QuizQuestion]:
     """
-    Choose the few questions the assessment asks, from the full list sorted by difficulty.
+    Choose and order the questions the assessment can ask.
 
-    The first two (one easier, one harder) decide the topic.
-    The third is the tie-breaker, taken from the middle.
+    The first MIN_QUESTIONS are spread over the whole difficulty range, because they usually
+    decide the topic. The rest are only asked while the result is still open.
     """
-    if len(questions) <= count:
-        return list(questions)
-
     ordered = sorted(questions, key=lambda q: q.difficulty)
-    size = len(ordered)
-    # With more than 3 questions these three positions are always different.
-    positions = [size // 4, (size * 3) // 4, size // 2]
-    return [ordered[i] for i in positions[:count]]
+    chosen = _spaced(ordered, count)
+
+    first = _spaced(chosen, min(MIN_QUESTIONS, len(chosen)))
+    first_ids = {id(q) for q in first}
+    rest = [q for q in chosen if id(q) not in first_ids]
+    return first + rest
 
 
 def get_questions(concept_id: str) -> list[QuizQuestion]:
-    """The assessment questions for one topic (2 decide it, the 3rd breaks a tie)."""
+    """The assessment questions for one topic (the first 5 usually decide it)."""
     if concept_id not in GENERATED_QS:
         concepts = load_concepts()
 
@@ -100,27 +150,35 @@ def topic_status(scores: list[bool], available: int = MAX_QUESTIONS) -> str:
     """
     Decide a topic from the answers of one assessment round.
 
-    available is how many questions the topic has (some topics have fewer than 3).
-    Returns "known", "missing", or "untested" when more answers are needed.
+    available is how many questions the topic has (some topics have fewer than 10).
+    Returns "known" (at least 80% right), "missing" (80% can no longer be reached),
+    or "untested" when more answers are needed.
     """
     limit = min(MAX_QUESTIONS, available)
     answers = scores[-MAX_QUESTIONS:]
-    right = sum(answers)
     count = len(answers)
+    right = sum(answers)
 
     if count == 0 or limit == 0:
         return "untested"
 
-    # Everything the topic has was answered: majority decides.
-    if count >= limit:
-        return "known" if right * 2 > count else "missing"
+    # Too few answers to decide, unless the topic has fewer questions than the minimum.
+    if count < min(MIN_QUESTIONS, limit):
+        return "untested"
 
-    # Two answers, more questions left: only a clear result stops early.
-    if count >= MIN_QUESTIONS:
-        if right == count:
-            return "known"
-        if right == 0:
-            return "missing"
+    # Enough answers and already at 80%: no need to ask more.
+    if right * 100 >= PASS_PERCENT * count:
+        return "known"
+
+    # Even if every remaining question is right, the final result stays under 80%.
+    best_possible = right + max(limit - count, 0)
+    if best_possible * 100 < PASS_PERCENT * limit:
+        return "missing"
+
+    # Everything was answered and it is under 80%.
+    if count >= limit:
+        return "missing"
+
     return "untested"
 
 
@@ -152,4 +210,4 @@ def next_question(goal: str, progress: dict[str, ConceptProgress]) -> QuizQuesti
 
 def find_gaps(goal: str, progress: dict[str, ConceptProgress]) -> list[str]:
     return [goal]
-'''
+'''
