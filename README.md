@@ -150,8 +150,16 @@ Each repository folder must also contain its `modules` directory.
 The project uses three books: **College Algebra 2e**, **Precalculus 2e**, and **Calculus Volume 1**.
 
 #### Convert the books
+Install Conda-forge so we can install Pandoc
+```bash
+conda install conda-forge::conda
+```
+Install Pandoc using conda-forge in the active environment:
+```bash
+conda install -c conda-forge pandoc
+```
 
-Pandoc must be installed and available in the active environment:
+Test if Pandoc was correctly installed
 
 ```bash
 pandoc --version
