@@ -211,6 +211,11 @@ Download Chromadb using conda-forge:
 conda install conda-forge::chromadb
 ```
 
+Ensure that SentenceTransformers downloaded, if not run:
+```bash
+conda install conda-forge::sentence-transformers
+```
+
 Run:
 
 ```bash
