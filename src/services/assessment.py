@@ -196,18 +196,3 @@ def find_gaps(goal_id: str, progress: dict[str, ConceptProgress]) -> list[str]:
         if entry is None or entry.status != "known":
             gaps.append(concept_id)
     return gaps
-
-# Vanha koodi talteen perhaps
-'''
-base
-from src.schemas.study import ConceptProgress, QuizQuestion
-
-def next_question(goal: str, progress: dict[str, ConceptProgress]) -> QuizQuestion | None:
-    if goal in progress:
-        return None
-    return QuizQuestion(id="fake-a1", concept_id=goal,
-                        question="Differentiate x^2", answer="2*x", difficulty=1)
-
-def find_gaps(goal: str, progress: dict[str, ConceptProgress]) -> list[str]:
-    return [goal]
-'''
