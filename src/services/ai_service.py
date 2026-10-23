@@ -1,3 +1,5 @@
+import re
+from pathlib import Path
 from typing import Optional
 
 from pydantic import BaseModel
@@ -14,7 +16,6 @@ from src.schemas.study import Concept, ConceptProgress, Lesson, QuizQuestion
 from src.capabilities.rag import load_concept_map, retrieve
 from src.capabilities.memory import load_progress, save_progress
 from src.capabilities.verifier import verify
-# from src.services.assessment import next_question, find_gaps
 from src.services.assessment import (
     get_assessment_concepts as assessment_get_concepts,
     build_tree as assessment_build_tree,
@@ -25,11 +26,10 @@ from src.services.assessment import (
     MIN_QUESTIONS,
     PASS_PERCENT,
     pick_assessment_questions,
-    start_topic as assessment_start_topic,
+    start_topic as assessment_start_topic
 )
 from src.services.lesson import generate_lesson
 from src.services.quiz import generate_quiz, check_answer
-
 
 # ---------------------------------------------------------------------------
 # Result types returned to the UI
@@ -185,7 +185,29 @@ class QuizResult(BaseModel):
 
 
 _TOPIC_CACHE: dict[str, TopicMaterial] = {}   # a lesson takes a while to write, so keep it
+_CACHE_DIR = Path(__file__).resolve().parents[2] / "data" / "lesson_cache"   # survives restarts
 
+def _cache_file(concept_id: str) -> Path:
+    return _CACHE_DIR / (re.sub(r"[^A-Za-z0-9_.-]", "_", concept_id) + ".json")
+
+def _cached_material(concept_id: str) -> Optional[TopicMaterial]:
+    """Memory first, then disk. Delete data/lesson_cache to force new lessons."""
+    if concept_id in _TOPIC_CACHE:
+        return _TOPIC_CACHE[concept_id]
+    try:
+        material = TopicMaterial.model_validate_json(_cache_file(concept_id).read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    _TOPIC_CACHE[concept_id] = material
+    return material
+
+def _save_material(concept_id: str, material: TopicMaterial) -> None:
+    _TOPIC_CACHE[concept_id] = material
+    try:
+        _CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        _cache_file(concept_id).write_text(material.model_dump_json(), encoding="utf-8")
+    except Exception:
+        pass   # disk cache is best effort
 
 def _error_text(err: Exception) -> str:
     if isinstance(err, OllamaConnectionError):
@@ -216,8 +238,9 @@ def _fresh_questions(concept_id: str, count: int, avoid: set[str]) -> list[QuizQ
 
 def get_topic_material(concept_id: str) -> TopicMaterial:
     """Lesson (retrieve -> write -> verify) and practice questions for one topic."""
-    if concept_id in _TOPIC_CACHE:
-        return _TOPIC_CACHE[concept_id]
+    cached = _cached_material(concept_id)
+    if cached:
+        return cached
 
     concept = _concepts_by_id().get(concept_id)
     if concept is None:
@@ -228,30 +251,57 @@ def get_topic_material(concept_id: str) -> TopicMaterial:
         chunks = retrieve(concept_id, top_k=5)
         lesson = generate_lesson(concept, chunks, retriever=retrieve)
 
-        # Verifier down -> still show the lesson, marked unverified.
+        # Dont automatically verify
+        lesson.verified = False
+        issues = []
+        '''
+        # Verifier down -> still show the lesson, marked unverified.     
         try:
             result = verify(lesson.content, chunks)
-            if result.corrected_content:
-                lesson.content = result.corrected_content
             lesson.verified = result.passed
             issues = result.issues
         except Exception:
             lesson.verified = False
             issues = ["Verifier unavailable, this material is unverified."]
-
+        '''
         practice = _fresh_questions(concept_id, QUIZ_QUESTIONS, set())
     except Exception as err:
         return TopicMaterial(concept=concept, lesson=Lesson(concept_id=concept_id, content=""),
                              error=_error_text(err))
 
     material = TopicMaterial(concept=concept, lesson=lesson, practice=practice, verifier_issues=issues)
-    _TOPIC_CACHE[concept_id] = material
+    _save_material(concept_id, material)
+    return material
+
+def verify_topic_material(concept_id: str) -> TopicMaterial:
+    # Verify the existing lesson only when the user requests it
+    material = get_topic_material(concept_id)
+
+    if material.error: return material
+
+    try:
+        chunks = retrieve(concept_id, top_k=5)
+        result = verify(material.lesson.content, chunks)
+
+        # Dont fix lessons
+        material.lesson.verified = result.passed
+        material.verifier_issues = (
+            [] if result.passed else result.issues
+        )
+
+    except Exception as error:
+        material.lesson.verified = False
+        material.verifier_issues = [
+            f"Verification failed ({type(error).__name__})."
+        ]
+
+    _save_material(concept_id, material)
     return material
 
 
 def new_quiz(concept_id: str, avoid: list[str] | None = None) -> list[QuizQuestion]:
     """A fresh quiz. Never reuses the practice questions or the ones in `avoid` if it can help it."""
-    cached = _TOPIC_CACHE.get(concept_id)
+    cached = _cached_material(concept_id)
     skip = set(avoid or [])
     if cached:
         skip |= {q.question for q in cached.practice}
@@ -291,9 +341,7 @@ def get_study_material(goal_id: str, progress: dict[str, ConceptProgress]) -> St
     try:
         concepts = _concepts_by_id()
         items: list[StudyItem] = []
-
-        # tällä hetkellä ei ole find_gaps()
-        # for concept_id in find_gaps(goal_id, progress):
+        
         for concept_id in find_gaps(goal_id, progress):
             concept = concepts.get(concept_id)
             if concept is None: continue
@@ -398,45 +446,3 @@ def generate_response(user_message: str, service: Optional[AIService] = None) ->
     active_service = service or AIService()
     response = active_service.process_message(user_message)
     return response.content
-
-
-# Vanha koodi talteen perhaps
-'''
-base
-def start_assessment(goal_id: str | None) -> AssessmentStep:
-    """Load saved progress and return the first assessment question."""
-    if not goal_id:
-        return AssessmentStep(message="Pick a goal first.")
-
-    progress = load_progress()
-    question = next_question(goal_id, progress)
-    message = "" if question else "Nothing to assess, you already know the prerequisites."
-    return AssessmentStep(progress=progress, question=question, message=message)
-'''
-
-'''
-def submit_answer(
-    goal_id: str,
-    progress: dict[str, ConceptProgress],
-    question: QuizQuestion | None,
-    answer_text: str,
-) -> AssessmentStep:
-    """Check an answer, update and save progress, return the next question."""
-    if question is None:
-        return AssessmentStep(progress=progress, message="No active question. Start the assessment first.")
-
-    if not answer_text or not answer_text.strip():
-        return AssessmentStep(progress=progress, question=question, message="Please type an answer first.")
-
-    correct = check_answer(question, answer_text.strip())
-
-    # Placeholder rule: one answer decides the status. Real logic belongs in assessment.py.
-    entry = progress.get(question.concept_id) or ConceptProgress(concept_id=question.concept_id)
-    entry.quiz_scores.append(correct)
-    entry.status = "known" if correct else "missing"
-    progress[question.concept_id] = entry
-    save_progress(progress)
-
-    message = "Correct!" if correct else f"Not quite. Expected: `{question.answer}`"
-    return AssessmentStep(progress=progress, question=next_question(goal_id, progress), message=message)
-'''
