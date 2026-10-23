@@ -71,3 +71,65 @@ Verified that unknown concept IDs and non-positive result counts
 raise ValueError before accessing the Chroma collection.
 
 These tests check input validation, not retrieval relevance.
+
+
+## Preliminary llama3.2 Application Test - Lauri
+
+### Method
+
+A manual application test was performed using the local `llama3.2`
+model through Ollama.
+
+The learning goal was Chain rule. After selecting the goal, the
+Get study material action generated lessons for prerequisite topics.
+
+The lesson generation code supplied retrieved OpenStax text chunks
+to the model. The displayed output was manually reviewed for successful
+generation, source references, and mathematical correctness.
+
+### Results
+
+| Test ID | Check | Result |
+| --- | --- | --- |
+| llama32-initial-01 | Lessons, practice questions, and source references are displayed | Pass |
+| llama32-initial-02 | Derivative rules worked example is mathematically correct | Fail |
+| llama32-initial-03 | Function notation lesson uses a valid geometric example | Fail |
+
+These are three checks of one preliminary application run, not three
+independent model benchmark prompts. They should not be interpreted
+as an overall model accuracy measurement.
+
+### Observed Errors
+
+The derivative rules lesson included an incorrect differentiation
+example for f(x) = 3x^2 + 2x - 5. The correct derivative is 6x + 2,
+but the generated working retained polynomial terms incorrectly.
+
+The functions lesson described A = s^2 as the area of a triangle
+with side length s. The formula describes the area of a square.
+
+### Verification Status
+
+During the initial test, lessons were labelled verified.
+Inspection of verifier.py showed that it returned passed=True
+unconditionally and did not check the content.
+
+The placeholder verifier was changed to return passed=False with
+a notice that automatic content verification is not implemented.
+
+A subsequent UI test confirmed that lessons were displayed as
+UNVERIFIED and that the notice was visible. This change corrected
+the verification label; it did not correct generated mathematical
+errors or implement factual verification.
+
+### Interpretation and Limitations
+
+The test confirmed that material generation worked through the
+application, but the generated lessons contained mathematical errors
+despite receiving retrieved source material.
+
+Response time was not measured. The output was reviewed manually,
+and the same prompts have not yet been run across multiple models.
+
+A controlled model comparison is still required to assess correctness,
+explanation clarity, and response time under comparable conditions.
