@@ -40,12 +40,13 @@ MISTAKES_TASK = (
 
 
 STEPS_TASK = (
-    "Below is a worked example from a math lesson. Rewrite its calculation as plain expressions, "
-    "one per line, in the order of the steps. Use only digits, + - * / ^ ( ) and sqrt( ). "
-    "Write every multiplication with *. Include only the lines that contain numbers only (no letters "
-    "like x or y), and only the first problem if there are several. Copy the numbers EXACTLY as they "
-    "are written in the example. Do not correct, recalculate or fix anything, even if a step looks wrong. "
-    "Output only the expressions, nothing else. If there are no number-only lines, output exactly: NONE\n\n"
+    "Below is a worked example from a math lesson. Rewrite its calculation as equations with numbers only, "
+    "one equation per line, in the order of the steps, for example: 5^2 - 4*1*6 = 1. "
+    "Use only digits, + - * / ^ ( ) = and sqrt( ). Write every multiplication with *. "
+    "Include only the steps where both sides are numbers only (no letters like x or y). "
+    "Copy the numbers EXACTLY as they are written in the example. Do not correct, recalculate or fix "
+    "anything, even if a step looks wrong. Output only the equations, nothing else. "
+    "If there are no such steps, output exactly: NONE\n\n"
 )
 
 
@@ -90,6 +91,7 @@ def _tidy(answer: str) -> str:
     answer = re.sub(r"<think>.*?</think>", "", answer, flags=re.DOTALL)
     answer = re.sub(r"\A\s*#{1,6}[^\n]*\n+", "", answer.strip())
     answer = re.sub(r"\s*\[Reference:[^\]]*\]", "", answer)   # links to figures and examples of the book
+    answer = re.sub(r"\n\s*NONE\W*\Z", "", answer)   # the answer followed by a stray NONE line
     return _fix_dashes(_fix_braces(answer)).strip()
 
 
@@ -115,6 +117,11 @@ def _is_none(text: str) -> bool:
     return len(text) < 400 and (
         re.match(r"\W*none\b", lowered) or any(phrase in lowered for phrase in NONE_PHRASES)
     )
+
+
+def _has_steps(example: str) -> bool:
+    """A worked example must show at least one solving step (an equation), not only a problem."""
+    return "=" in example
 
 
 def _math_ok(model, example: str) -> bool | None:
@@ -168,6 +175,10 @@ def generate_lesson(
 
     example_query = f"Example using {concept.name}: a problem and its solution"
     example = part(EXAMPLE_TASK, example_query, 4)
+    if not _is_none(example) and not _has_steps(example):
+        example = part(EXAMPLE_TASK, example_query, 4)   # no steps in it, try once more
+        if not _is_none(example) and not _has_steps(example):
+            example = ""
     removed = False
     if not _is_none(example) and _math_ok(model, example) is False:
         # A step of the example is wrong. Try once more, and drop it if it is still wrong.

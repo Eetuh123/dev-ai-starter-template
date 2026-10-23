@@ -1,3 +1,4 @@
+import copy
 import re
 from pathlib import Path
 from typing import Optional
@@ -273,6 +274,16 @@ def get_topic_material(concept_id: str) -> TopicMaterial:
     _save_material(concept_id, material)
     return material
 
+def regenerate_topic_material(concept_id: str) -> TopicMaterial:
+    """Throw away the saved lesson of a topic and write a new one."""
+    _TOPIC_CACHE.pop(concept_id, None)
+    try:
+        _cache_file(concept_id).unlink()
+    except OSError:
+        pass   # nothing saved on disk, or it cannot be removed
+    return get_topic_material(concept_id)
+
+
 def verify_topic_material(concept_id: str) -> TopicMaterial:
     # Verify the existing lesson only when the user requests it
     material = get_topic_material(concept_id)
@@ -318,12 +329,13 @@ def grade_quiz(
     if not questions:
         return QuizResult(progress=progress, feedback=["No quiz questions for this topic yet."])
 
+    progress = copy.deepcopy(progress)   # a new object, so the page notices that the progress changed
     flags, feedback = [], []
     for number, (question, text) in enumerate(zip(questions, answers), start=1):
         text = (text or "").strip()
         ok = bool(text) and check_answer(question, text)
         flags.append(ok)
-        feedback.append(f"{number}. Correct." if ok else f"{number}. Not quite. Expected: `{question.answer}`")
+        feedback.append(f"{number}. ✅ Correct." if ok else f"{number}. ❌ Not quite. Expected: `{question.answer}`")
 
     right, total = sum(flags), len(questions)
     passed = right * 100 >= PASS_PERCENT * total

@@ -14,6 +14,7 @@ from src.services.ai_service import (
     start_topic,
     get_tree,
     get_topic_material,
+    regenerate_topic_material,
     new_quiz,
     grade_quiz,
     QUIZ_QUESTIONS,
@@ -105,6 +106,9 @@ def _lesson_markdown(material) -> str:
                      "been fact-checked, so it may contain mistakes. Compare it with the sources. "
                      "**To verify lessons you need a Gemini API Key.**")
     
+    if material.lesson.verified:
+        parts.append("> **Verified.** Gemini checked this lesson against the sources and found no problems.")
+
     if material.verifier_issues:
         parts.append("> **Verifier notes:**\n" + "\n".join(f"> - {i}" for i in material.verifier_issues))
     
@@ -115,23 +119,27 @@ def verify_current_topic(concept_id, attempts):
     if not concept_id:
         return "", gr.update(visible=False), attempts
 
-    attempts = attempts or []
-
-    # A topic can only be verified once per session.
-    if concept_id in attempts:
-        material = get_topic_material(concept_id)
-        return _lesson_markdown(material), gr.update(visible=False), attempts
-
-    # Record the attempt before returning the result.
-    attempts = attempts + [concept_id]
-
+    # The button stays when the check did not pass, so it can be tried again (the key may be missing,
+    # Gemini may be busy, or the lesson has real problems). A verified lesson needs no second check.
     material = verify_topic_material(concept_id)
 
     return (
         _lesson_markdown(material),
-        gr.update(visible=False),
-        attempts,
+        gr.update(visible=not material.lesson.verified),
+        attempts or [],
     )
+def regenerate_current_topic(concept_id, attempts):
+    """Write a new lesson for the open topic. The new lesson is unverified, so verifying is allowed again."""
+    if not concept_id:
+        return "", "", "", gr.update(), attempts
+    material = regenerate_topic_material(concept_id)
+    attempts = [item for item in (attempts or []) if item != concept_id]
+    if material.error:
+        return _lesson_markdown(material), "", "", gr.update(visible=False), attempts
+    return (_lesson_markdown(material), _practice_markdown(material), _answers_markdown(material),
+            gr.update(visible=True), attempts)
+
+
 def _make_loader(concept_id):
     """
     Button handler: generate the questions for one topic and reveal the first answer boxes.
@@ -444,12 +452,22 @@ def build_ui() -> gr.Blocks:
                                 inputs=[topic_state, verified_attempts],
                                 outputs=[lesson_md, verify_btn, verified_attempts],
                             )
+                            regenerate_btn = gr.Button("Regenerate lesson")
                             practice_md = gr.Markdown(latex_delimiters=LATEX_DELIMITERS)
                             
                             with gr.Accordion("Show practice answers", open=False):
                                 answers_md = gr.Markdown(latex_delimiters=LATEX_DELIMITERS)
+                            regenerate_btn.click(
+                                fn=lambda: "Writing a new lesson from the textbook sources, this can take a minute...",
+                                outputs=lesson_md,
+                            ).then(
+                                fn=regenerate_current_topic,
+                                inputs=[topic_state, verified_attempts],
+                                outputs=[lesson_md, practice_md, answers_md, verify_btn, verified_attempts],
+                            )
                         with gr.Tab("Quiz"):
                             quiz_status = gr.Markdown()
+                            quiz_result = gr.Markdown(latex_delimiters=LATEX_DELIMITERS)   # result on top, so it is seen
                             quiz_groups, quiz_mds, quiz_boxes, quiz_slots = [], [], [], []
                             for i in range(QUIZ_QUESTIONS):
                                 with gr.Group(visible=False) as qgroup:
@@ -460,7 +478,6 @@ def build_ui() -> gr.Blocks:
                                 quiz_boxes.append(qbox)
                                 quiz_slots += [qgroup, qmd, qbox]
                             submit_btn = gr.Button("Submit quiz", variant="primary", visible=False)
-                            quiz_result = gr.Markdown(latex_delimiters=LATEX_DELIMITERS)
                             retry_btn = gr.Button("Try again with new questions", visible=False)
 
                 quiz_outputs = [quiz_state, quiz_status, *quiz_slots, quiz_result, submit_btn, retry_btn]
@@ -471,28 +488,26 @@ def build_ui() -> gr.Blocks:
                             "Writing the lesson from the textbook sources, this can take a minute...",
                             "", "", *_quiz_updates([]))
 
-                def load_topic(concept_id, attempts):
+                def load_topic(concept_id):
                     material = get_topic_material(concept_id)
                     if material.error:
-                        gr.update(visible=concept_id not in (attempts or []))
                         return (f"## {material.concept.name}", _lesson_markdown(material), "", "",
-                                *_quiz_updates([]))
+                                *_quiz_updates([]), gr.update(visible=False))
                     questions = new_quiz(concept_id)
-                    gr.update(visible=concept_id not in (attempts or []))
                     return (f"## {material.concept.name}", _lesson_markdown(material),
                             _practice_markdown(material), _answers_markdown(material),
-                            *_quiz_updates(questions))
+                            *_quiz_updates(questions), gr.update(visible=not material.lesson.verified))
 
                 topic_outputs = [modal, topic_state, modal_title, lesson_md, practice_md, answers_md, *quiz_outputs]
-                load_outputs = [modal_title, lesson_md, practice_md, answers_md, *quiz_outputs]
+                load_outputs = [modal_title, lesson_md, practice_md, answers_md, *quiz_outputs, verify_btn]
 
                 def submit_quiz(goal_id, progress, concept_id, questions, *answers):
                     result = grade_quiz(progress, concept_id, questions, list(answers))
                     lines = "\n".join(result.feedback)
                     if result.passed:
-                        head = f"**Passed: {result.right}/{result.total} right.** The topic is now marked as known."
+                        head = f"## ✅ Passed: {result.right}/{result.total} right\n\nThe topic is now marked as known."
                     else:
-                        head = (f"**Not passed: {result.right}/{result.total} right**, 80% is needed. "
+                        head = (f"## ❌ Not passed: {result.right}/{result.total} right\n\n80% is needed. "
                                 "Check the answers below, read the lesson again and try with new questions.")
                     return (result.progress, f"{head}\n\n{lines}",
                             gr.update(interactive=False), gr.update(visible=not result.passed),

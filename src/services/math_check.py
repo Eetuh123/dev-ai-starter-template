@@ -13,27 +13,36 @@ def _clean(line: str) -> str:
     return re.sub(r"^=+\s*", "", line).strip()
 
 
+def _value(text: str):
+    """The value of one side of an equation, or None if it is not a plain number-only expression."""
+    text = _clean(text)
+    if not text:
+        return None
+    try:
+        _check_text(text)
+        value = _parse(text)
+    except Exception:
+        return None
+    return None if value.free_symbols else value
+
+
 def check_steps(lines: list[str]) -> bool | None:
     """
-    Do all number-only lines of a worked example have the same value?
+    Is every number-only equation of a worked example true?
 
-    True: they agree. False: some step is wrong. None: fewer than two readable lines, cannot tell.
-    SymPy does the arithmetic, so a model cannot get it wrong here.
+    Each line is checked on its own, like "5^2 - 4*1*6 = 1" or "2*(3+4) = 2*7 = 14": all the
+    sides of the line must have the same value. Lines in the example may have different values
+    from each other (different steps calculate different things).
+    True: all checked equations hold. False: some equation is wrong.
+    None: no equation could be read, cannot tell. SymPy does the arithmetic, so a model cannot get it wrong.
     """
-    values = []
+    checked = 0
     for raw in lines:
-        text = _clean(raw)
-        if not text:
-            continue
-        try:
-            _check_text(text)
-            value = _parse(text)
-        except Exception:
-            continue  # not a plain expression, skip the line
-        if value.free_symbols:
-            continue
-        values.append(value)
-
-    if len(values) < 2:
-        return None
-    return all(sp.simplify(value - values[0]) == 0 for value in values[1:])
+        sides = [_value(side) for side in raw.split("=")] if raw.count("=") else []
+        sides = [value for value in sides if value is not None]
+        if len(sides) < 2:
+            continue  # not a readable number-only equation, skip the line
+        checked += 1
+        if not all(sp.simplify(value - sides[0]) == 0 for value in sides[1:]):
+            return False
+    return True if checked else None
