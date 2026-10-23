@@ -182,7 +182,7 @@ def generate_lesson(
         sections.append("### Common mistakes\n\n" + mistakes)
 
     unique = list({chunk.id: chunk for chunk in used}.values())
-    content = "\n\n".join(sections) + f"\n\n---\n**Sources:**\n{_source_list(unique)}"
+    content = "\n\n".join(sections) + f"\n\n---\n ### Sources\n{_source_list(unique)}\n"
     return Lesson(
         concept_id=concept.id,
         content=content,
