@@ -251,6 +251,20 @@ python -c "from src.capabilities.rag import retrieve; [print(c.book, c.section, 
 ```
 
 Retrieval works independently of Ollama. Generating study lessons requires Ollama and the configured language model.
+#### Verify lessons
+To verify lessons you need to download Google's Generative AI package
+Run:
+```bash
+conda install -c conda-forge google-genai python-dotenv
+```
+And get your API Key from Google AI Studio
+https://aistudio.google.com/
+
+Paste this into .env, using your API Key:
+```env
+GEMINI_REVIEW_MODEL=gemini-3.8-flash
+GEMINI_API_KEY=YOUR_API_KEY
+```
 
 #### Files excluded from Git
 
