@@ -31,5 +31,7 @@ Thumbs.db
 # Local progress data
 /data/progress.json
 
+# Generated lesson cache
+/data/lesson_cache/
 
 /evaluation/model_comparison/**/*.md
