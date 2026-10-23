@@ -247,3 +247,42 @@ model reloads and depends on the test computer.
 The comparison evaluates short, source-supported problem explanations.
 It does not establish the quality of every generated lesson, quiz,
 or the complete application workflow.
+
+
+## Progress Persistence Test — 23 October 2026
+
+After Real numbers and Order of operations were marked as known,
+the application was stopped and restarted. The same learning goal
+was selected again, and both skills remained marked as known.
+
+Result: Pass. Skill status persisted across an application restart.
+
+
+## Learning Progression Test — 23 October 2026
+
+A manual UI test covered the learning path from Real numbers
+and Order of operations to Algebraic expressions.
+
+The assessment accepted correct answers and rejected an incorrect
+answer. A score of 4/5 met the 80% threshold.
+
+After completing the prerequisites, the Algebraic expressions quiz
+was accessible. Submitting four correct answers and one incorrect
+answer produced a passing result, and the target skill turned green.
+
+Result: Pass for the tested learning path.
+
+This test checks application behavior, not student learning outcomes
+or the correctness of all generated study material.
+
+
+## Failed Quiz and Retry Test — 23 October 2026
+
+Submitting five incorrect answers produced a failed result of 0/5.
+The application displayed the expected answers, explained the 80%
+passing threshold, and offered a retry.
+
+Clicking "Try again with new questions" opened a new quiz with
+different questions.
+
+Result: Pass for failure feedback and retry generation.
