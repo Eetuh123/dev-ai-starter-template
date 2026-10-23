@@ -1,35 +1,31 @@
 # Evaluation Results Summary
 
-Document your team's evaluation results below.
-
 ## Summary Overview
 
-- **Date of Evaluation:** YYYY-MM-DD
-- **Model Evaluated:** (e.g., `llama3.2`)
-- **Total Test Cases Executed:** 0
-- **Passed:** 0
-- **Failed:** 0
-- **Pass Rate:** 0%
+Evaluation includes development-stage retrieval tests, automated
+input validation tests, manual application testing, and a comparison
+of three local language models.
 
-## Performance by Category
+- **Models compared:** llama3.2, qwen3.5:4b, qwen3.5:9b
+- **Comparison scope:** Five prompts per model, 15 responses in total
+- **RAG input validation:** Three automated tests passed
+- **Selected model:** qwen3.5:9b
 
-| Category | Total Cases | Passed | Failed | Pass Rate |
-| :--- | :---: | :---: | :---: | :---: |
-| Successful Cases | 0 | 0 | 0 | 0% |
-| Difficult Cases | 0 | 0 | 0 | 0% |
-| Failure / Edge Cases | 0 | 0 | 0 | 0% |
+A single overall pass rate is not reported because these evaluations
+measure different aspects of the system. Model review scores are
+reported separately from functional test results.
 
-## Key Findings & Failure Analysis
+## Key Findings
 
-### What worked well
-- Observation 1
-- Observation 2
-
-### Observed failure modes
-- Description of case where the system failed and why.
-
-## Action Items & Improvements
-- [ ] Planned fix or enhancement based on evaluation findings.
+- Chain rule retrieval returned relevant formulas and source references.
+- Updating the fractions source improved retrieval, but some material
+  remained too advanced for beginners.
+- Material generation worked through the application, but generated
+  lessons could contain mathematical errors.
+- The placeholder verifier was corrected to display lessons as
+  UNVERIFIED rather than claiming that their content was checked.
+- Qwen3.5:9b received the highest correctness and clarity scores
+  in the five-prompt comparison, with a mean response time of 10.78 seconds.
 
 
 ## Preliminary RAG Retrieval Tests - Lauri
@@ -133,3 +129,121 @@ and the same prompts have not yet been run across multiple models.
 
 A controlled model comparison is still required to assess correctness,
 explanation clarity, and response time under comparable conditions.
+
+
+## Model Comparison — 23 October 2026
+
+### Method
+
+We compared `llama3.2`, `qwen3.5:4b`, and `qwen3.5:9b` using
+`scripts/compare_models.py`.
+
+Each model answered the same five questions covering:
+
+- Fraction arithmetic
+- Function composition
+- Limits
+- Differentiation rules
+- The chain rule
+
+Source chunks were retrieved once per question and reused for all
+models. Each prompt included up to three chunks, limited to the first
+4,000 characters of each chunk.
+
+The existing model client used `think=False` and `num_ctx=8192`.
+Other generation settings used model defaults.
+
+Each model received a separate warm-up request before testing.
+Response time was measured around the complete generation call,
+excluding retrieval and the warm-up request.
+
+The test environment was Windows 11 with Python 3.12.15.
+Each prompt was run once per model, producing 15 responses.
+All generation requests completed with non-empty answers.
+
+### Scoring
+
+Answers were reviewed against the expected
+results and supplied sources. Scores are subjective review judgments,
+not automated accuracy measurements.
+
+Correctness per answer:
+
+- 0: Incorrect or unusable.
+- 1: Partially correct, incomplete, or containing an incorrect claim.
+- 2: Correct and sufficiently complete.
+
+Correctness includes calculations, explanations, and claims about
+the supplied sources.
+
+Explanation clarity per answer:
+
+- 1: Confusing or misleading.
+- 2: Understandable but incomplete or imprecise.
+- 3: Clear and suitable for a student.
+
+### Summary Results
+
+| Model | Correctness / 10 | Mean clarity / 3 | Mean response time |
+| --- | --- | --- | --- |
+| llama3.2 | 7 | 2.2 | 2.71 s |
+| qwen3.5:4b | 8 | 2.2 | 4.53 s |
+| qwen3.5:9b | 9 | 2.8 | 10.78 s |
+
+### Scores by Question
+
+Each cell shows correctness / clarity.
+
+| Question | llama3.2 | qwen3.5:4b | qwen3.5:9b |
+| --- | --- | --- | --- |
+| Fractions | 2 / 3 | 2 / 3 | 2 / 3 |
+| Function composition | 1 / 2 | 2 / 3 | 2 / 3 |
+| Limits | 2 / 2 | 2 / 2 | 1 / 2 |
+| Differentiation rules | 1 / 2 | 1 / 2 | 2 / 3 |
+| Chain rule | 1 / 2 | 1 / 1 | 2 / 3 |
+
+### Findings
+
+**llama3.2**
+
+The model was fastest and produced correct final calculations.
+However, some explanations were inaccurate.
+
+The composition answer incorrectly suggested that the two compositions
+were unequal for every x. The differentiation answer stated the
+constant multiple rule using misleading self-referential notation.
+The chain rule answer incorrectly described the role of the inner
+derivative in its closing explanation.
+
+**qwen3.5:4b**
+
+The model produced mostly relevant explanations, but its differentiation
+answer omitted the requested final result, 6x + 2.
+
+Its chain rule calculation was correct, but the explanation falsely
+claimed that the total derivative could remain non-zero when the
+outer derivative evaluated at the inner function was zero.
+
+**qwen3.5:9b**
+
+The model gave the clearest and most complete explanations overall,
+with correct final calculations.
+
+However, its limit answer incorrectly claimed that Source 1 supported
+matching one-sided limits. The supplied source actually described
+one-sided limits of 3 and 0.
+
+
+### Decision and Limitations
+
+We selected `qwen3.5:9b` because it received the highest correctness
+and clarity scores in this comparison. 
+
+This comparison used only five questions and one run per model.
+Generation settings other than thinking mode and context size used
+model defaults, which may differ between models. Timing may include
+model reloads and depends on the test computer.
+
+The comparison evaluates short, source-supported problem explanations.
+It does not establish the quality of every generated lesson, quiz,
+or the complete application workflow.

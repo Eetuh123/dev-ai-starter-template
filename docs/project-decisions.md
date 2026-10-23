@@ -4,34 +4,38 @@
 
 **Decision:**
 
-Use `qwen3.5:9b` as the preferred model based on preliminary testing.
-Confirm the selection with a documented comparison.
+Select `qwen3.5:9b` for the project based on our exploratory
+comparison of three local models.
 
 **Alternatives considered:**
 
-- `llama3.2` (3B): our initial baseline.
-- `qwen3.5:4b`: tested by a team member.
-- `qwen3.5:9b`: tested by a team member.
+- `llama3.2`
+- `qwen3.5:4b`
+- `qwen3.5:9b`
 
 **Why we chose this:**
 
-Our initial application tests with `llama3.2` produced mathematical
-errors despite using retrieved textbook material.
+We tested each model with the same five mathematics prompts and
+the same retrieved source texts. Qwen3.5:9b received the highest
+review scores for correctness and explanation clarity, although
+it was slower than the smaller models.
 
-The conducted tests showed that `qwen3.5:4b` produced better results
-than `llama3.2`, and that `qwen3.5:9b` performed better still.
-Based on these preliminary observations, we intend to use
-`qwen3.5:9b`.
+| Model | Correctness / 10 | Mean clarity / 3 | Mean response time |
+| --- | --- | --- | --- |
+| llama3.2 | 7 | 2.2 | 2.71 s |
+| qwen3.5:4b | 8 | 2.2 | 4.53 s |
+| qwen3.5:9b | 9 | 2.8 | 10.78 s |
 
-These observations are qualitative. A comparison using the same
-5–10 mathematics prompts and source texts is still needed to
-document correctness, explanation clarity, and response time.
+Response times were measured automatically. Correctness and clarity
+were assessed by reviewing the saved answers.
 
-| Model | Preliminary observation | Correctness score | Clarity score | Response time |
-| --- | --- | --- | --- | --- |
-| llama3.2 | Mathematical errors observed in generated lessons | Pending | Pending | Not measured |
-| qwen3.5:4b | Reported improvement over llama3.2 by a team member | Pending | Pending | Not recorded |
-| qwen3.5:9b | Reported as the best of the three; preferred model | Pending | Pending | Not recorded |
+We prioritize explanation quality over response speed for this
+study assistant. 
+
+This was a small comparison with one response per prompt per model.
+It supports our project decision but does not neccesserily establish general
+model accuracy. Detailed findings are recorded in
+`evaluation/evaluation_results.md`.
 
 ---
 
