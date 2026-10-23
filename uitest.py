@@ -3,6 +3,7 @@ import difflib
 import json
 import re
 import html
+import textwrap
 
 from src.config import config
 from src.services.ai_service import (
@@ -51,78 +52,6 @@ css = """
     box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.55);
 }
 
-.learning-path {
-    padding: 24px;
-    border: 1px solid;
-    color: #3F3F46;
-    border-radius: 18px;
-    text-align: center;
-}
-
-.path-goal {
-    padding: 20px;
-    border: 1px solid #FF9633;
-    border-radius: 14px;
-}
-
-.path-goal-title {
-    font-size: 17px;
-    font-weight: 600;
-}
-
-.path-goal-subtitle {
-    font-size: 13px;
-    opacity: 0.7;
-    margin-top: 3px;
-}
-
-.path-connector { 
-    height: 24px;
-    width: 1.5px;
-    margin: 0 auto;
-    background: #9ba5bd; 
-}
-
-.path-label {
-    font-size: 11px;
-    letter-spacing: 2px;
-    opacity: 0.7;
-    font-weight: 700;
-}
-
-.path-subjects {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-}
-
-.path-subject {
-    border: 1px solid #FF9633;
-    border-radius: 12px;
-    padding: 16px 10px;
-    display: grid;
-        grid-template-columns: repeat(auto-fit);
-        gap: 12px;
-}
-
-.path-subject-name {
-    font-weight: 600;
-    overflow-wrap: anywhere;
-}
-
-.path-status {
-    display: inline-block;
-    padding: 4px 9px;
-    border-radius: 20px;
-    font-size: 12px;
-    opacity: 0.8;
-}
-
-@media (max-width: 520px) {
-    .path-subjects { grid-template-columns: 1fr; }
-
-    .learning-path { padding: 14px; }
-}
 """
 
 def _question_text(question) -> str:
@@ -130,13 +59,6 @@ def _question_text(question) -> str:
         return "**Assessment done.** Click *Get study material* below."
 
     return f"**Question:** {question.question}"
-
-import difflib
-import json
-import re
-
-from src.config import config
-
 
 QUESTIONS_PER_TOPIC = 10  # at most 10 questions per topic
 FIRST_QUESTIONS = 5       # shown at the start, more appear one by one while 80% is still reachable
@@ -146,7 +68,6 @@ LATEX_DELIMITERS = [
     {"left": "$$", "right": "$$", "display": True},
     {"left": "$", "right": "$", "display": False},
 ]
-
 
 def _quiz_updates(questions):
     """Values for [quiz_state, quiz_status, (group, question_md, answer_box) x QUIZ_QUESTIONS, quiz_result, submit_btn, retry_btn]."""
@@ -164,17 +85,14 @@ def _quiz_updates(questions):
     out += ["", gr.update(visible=bool(questions), interactive=True), gr.update(visible=False)]
     return out
 
-
 def _practice_markdown(material) -> str:
     if not material.practice:
         return "No practice questions for this topic yet."
     return "### Practice\n\n" + "\n".join(
         f"{n}. {q.question}" for n, q in enumerate(material.practice, start=1))
 
-
 def _answers_markdown(material) -> str:
     return "\n".join(f"{n}. `{q.answer}`" for n, q in enumerate(material.practice, start=1))
-
 
 def _lesson_markdown(material) -> str:
     if material.error:
@@ -188,10 +106,9 @@ def _lesson_markdown(material) -> str:
     parts.append(material.lesson.content)
     return "\n\n".join(parts)
 
-
 def _make_loader(concept_id):
-    """Button handler: generate the questions for one topic and reveal the first answer boxes.
-
+    """
+    Button handler: generate the questions for one topic and reveal the first answer boxes.
     Returns values for: [questions_state, status_md, load_btn, progress_state, group_1, question_md_1, group_2, ...]
     """
     def load(progress):
@@ -221,10 +138,9 @@ def _make_loader(concept_id):
         return [questions, "Answer the questions below.", gr.update(visible=False), progress, *slots]
     return load
 
-
 def _make_checker(index):
-    """Answer handler for question number `index` of a topic.
-
+    """
+    Answer handler for question number `index` of a topic.
     Returns values for: [progress_state, result_md, check_btn, answer_box, group_1, group_2, ...]
     """
     def check(goal_id, progress, questions, answer):
@@ -253,7 +169,6 @@ def _make_checker(index):
         # Answered: lock the box so one question cannot be scored twice.
         return step.progress, step.message, gr.update(interactive=False), gr.update(interactive=False), *groups
     return check
-
 
 def _rank_goals(text, goals):
     """Score every concept against the user's text. Returns [(score, concept)] best first."""
@@ -311,7 +226,6 @@ def _layout(node, depth=0, counter=None):
     kids = [_layout(child, depth + 1, counter) for child in node["children"]]
     return {"id": node["id"], "depth": depth, "x": (kids[0]["x"] + kids[-1]["x"]) / 2, "children": kids}
 
-
 # Clicking a node writes its id into a hidden textbox and presses a hidden button (see build_ui).
 CLICK_JS = (
     "var t=document.querySelector('#node-pick textarea,#node-pick input');"
@@ -320,11 +234,12 @@ CLICK_JS = (
 )
 STATUS_MARK = {"known": "\u2713", "missing": "!", "untested": "?"}
 
-
 def _tree_svg(tree, names, status_of) -> str:
-    """The learning map as an SVG: circles for topics, lines for 'needs this first'. Nodes are clickable."""
-    import textwrap
-
+    """
+    The learning map as an SVG: circles for topics, lines for 'needs this first'. 
+    Nodes are clickable.
+    """
+    
     root = _layout(tree)
     gap_x, gap_y, margin, top, radius = 150, 150, 90, 45, 28
 
@@ -368,7 +283,6 @@ def _tree_svg(tree, names, status_of) -> str:
         )
     parts.append("</svg>")
     return "".join(parts)
-
 
 def ask_agent(user_message):
     if not user_message or not user_message.strip():
@@ -447,21 +361,6 @@ def ask_agent(user_message):
             matched_goal.id,
         )
 
-    subject_names = [
-        concepts_by_id[concept_id].name
-        for concept_id in prerequisite_ids
-        if concept_id in concepts_by_id
-    ]
-
-    '''
-    Bullet point list of prerequisites
-    response_text = (
-            f"Your learning goal: **{matched_goal.name}**\n\n"
-            "Study these prerequisite subjects first:\n\n"
-            + "\n".join(f"- {name}" for name in subject_names)
-            + "\n\nThe assessment tabs below contain questions for each subject."
-        )
-    '''
     response_text = ""
 
     return response_text, matched_goal.id
@@ -495,69 +394,11 @@ def build_ui() -> gr.Blocks:
                 # Saved progress from disk, so a restart continues where the user left off.
                 demo.load(fn=get_progress, inputs=None, outputs=progress_state)
 
-
                 ask_btn.click(
                     fn=ask_and_build_tree,
                     inputs=user_input,
                     outputs=[agent_output, goal_state],
                 )
-
-                @gr.render(inputs=goal_state)
-                def render_assessments(goal_id):
-                    if not goal_id: return
-
-                    prerequisite_ids = get_assessment_concepts(goal_id)
-
-                    if not prerequisite_ids:
-                        gr.Markdown("No prerequisite subjects found.")
-                        return
-
-                    concepts_by_id = {concept.id: concept for concept in list_goals()}
-
-                    with gr.Tabs():
-                        for concept_id in prerequisite_ids:
-                            concept = concepts_by_id.get(concept_id)
-
-                            subject_name = (
-                                concept.name
-                                if concept
-                                else concept_id.replace("_", " ").title()
-                            )
-
-                            with gr.Tab(subject_name):
-                                questions_state = gr.State([])
-                                status_md = gr.Markdown(
-                                    "Questions for this topic are generated when you click the button."
-                                )
-                                load_btn = gr.Button("Generate questions")
-
-                                # Fixed answer slots, hidden until the questions exist.
-                                slots = []
-                                groups = []
-                                parts = []
-                                for i in range(QUESTIONS_PER_TOPIC):
-                                    with gr.Group(visible=False) as group:
-                                        question_md = gr.Markdown(latex_delimiters=LATEX_DELIMITERS)
-                                        answer_box = gr.Textbox(label="Your answer")
-                                        check_btn = gr.Button("Check answer")
-                                        result_md = gr.Markdown()
-                                    groups.append(group)
-                                    parts.append((check_btn, answer_box, result_md))
-                                    slots += [group, question_md]
-
-                                for i, (check_btn, answer_box, result_md) in enumerate(parts):
-                                    gr.on(
-                                        triggers=[check_btn.click, answer_box.submit],
-                                        fn=_make_checker(i),
-                                        inputs=[goal_state, progress_state, questions_state, answer_box],
-                                        outputs=[progress_state, result_md, check_btn, answer_box, *groups],
-                                    )
-
-                                load_btn.click(
-                                    fn=_make_loader(concept_id),
-                                    inputs=progress_state,
-                                    outputs=[questions_state, status_md, load_btn, progress_state, *slots],
-                                )
 
                 topic_state = gr.State(None)      # topic open in the window
                 quiz_state = gr.State([])         # questions of the current quiz attempt
@@ -667,4 +508,78 @@ def build_ui() -> gr.Blocks:
                     gr.HTML(_tree_svg(tree, names, status_of))
             gr.Column(scale=1)
 
-    return demo
+    return demo
+
+'''
+subject_names = [
+        concepts_by_id[concept_id].name
+        for concept_id in prerequisite_ids
+        if concept_id in concepts_by_id
+    ]
+
+Bullet point list of prerequisites
+response_text = (
+        f"Your learning goal: **{matched_goal.name}**\n\n"
+        "Study these prerequisite subjects first:\n\n"
+        + "\n".join(f"- {name}" for name in subject_names)
+        + "\n\nThe assessment tabs below contain questions for each subject."
+    )
+'''
+'''
+@gr.render(inputs=goal_state)
+def render_assessments(goal_id):
+if not goal_id: return
+
+prerequisite_ids = get_assessment_concepts(goal_id)
+
+if not prerequisite_ids:
+gr.Markdown("No prerequisite subjects found.")
+return
+
+concepts_by_id = {concept.id: concept for concept in list_goals()}
+
+with gr.Tabs():
+for concept_id in prerequisite_ids:
+concept = concepts_by_id.get(concept_id)
+
+subject_name = (
+concept.name
+if concept
+else concept_id.replace("_", " ").title()
+)
+
+with gr.Tab(subject_name):
+questions_state = gr.State([])
+status_md = gr.Markdown(
+    "Questions for this topic are generated when you click the button."
+)
+load_btn = gr.Button("Generate questions")
+
+# Fixed answer slots, hidden until the questions exist.
+slots = []
+groups = []
+parts = []
+for i in range(QUESTIONS_PER_TOPIC):
+    with gr.Group(visible=False) as group:
+        question_md = gr.Markdown(latex_delimiters=LATEX_DELIMITERS)
+        answer_box = gr.Textbox(label="Your answer")
+        check_btn = gr.Button("Check answer")
+        result_md = gr.Markdown()
+    groups.append(group)
+    parts.append((check_btn, answer_box, result_md))
+    slots += [group, question_md]
+
+for i, (check_btn, answer_box, result_md) in enumerate(parts):
+    gr.on(
+        triggers=[check_btn.click, answer_box.submit],
+        fn=_make_checker(i),
+        inputs=[goal_state, progress_state, questions_state, answer_box],
+        outputs=[progress_state, result_md, check_btn, answer_box, *groups],
+    )
+
+load_btn.click(
+    fn=_make_loader(concept_id),
+    inputs=progress_state,
+    outputs=[questions_state, status_md, load_btn, progress_state, *slots],
+)
+'''
