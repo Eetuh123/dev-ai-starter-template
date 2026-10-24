@@ -307,14 +307,34 @@ pytest
 
 ## Evaluation
 
-Describe your evaluation methodology and summarize key results. Starter test cases can be found in [`evaluation/test_cases.json`](evaluation/test_cases.json).
+The application was evaluated using nine test cases covering study material generation, retrieval-augmented generation (RAG), mathematical correctness, and error handling. The tests included preliminary manual UI testing, manual reviews of generated lessons, manual retrieval tests, and automated `pytest` tests.
 
-Refer to [`evaluation/README.md`](evaluation/README.md) for guidelines on defining success, edge cases, and failure scenarios.
+Each test case included an expected behavior, an actual result, and a status of `pass`, `fail`, or `partial`. Of the nine test cases, six passed, two failed, and one partially passed.
+
+The preliminary UI test demonstrated that the application could generate prerequisite study lessons, practice questions, and OpenStax source references using Llama 3.2. The retrieval tests also showed that the system could retrieve relevant Chain Rule material and recognize the Finnish term *ketjusääntö*. Automated tests confirmed that unknown concepts and invalid `top_k` values were rejected before the Chroma collection was accessed.
+
+However, manual reviews identified mathematical errors in two generated lessons. The derivative rules lesson contained an incorrect differentiation example, while the functions lesson incorrectly used the area formula for a square to describe a triangle. The fraction retrieval test partially passed because, although some relevant material was returned, the first result was too advanced for a beginner.
+
+Overall, the evaluation showed that the main generation and retrieval functionality works in the tested cases, but generated mathematical content is not always reliable. The evaluation was limited to nine cases, and response times were not measured. The results should therefore be considered an initial assessment rather than a comprehensive measure of system reliability.
+
+More in  [`evaluation/README.md`](evaluation/README.md).
 
 ## Known limitations
 
-- Highlight known system limitations, unhandled edge cases, or boundaries of current capabilities.
+- **Mathematical correctness:** The language model can generate incorrect formulas, worked examples, and explanations. Successful lesson generation does not guarantee correctness.
+- **Retrieval relevance:** Retrieved content can be relevant to a topic but still be too advanced for the intended learner.
+- **Limited evaluation coverage:** Only nine test cases were evaluated, so the results do not cover all supported topics or possible user inputs.
+- **Manual testing:** Several tests relied on manual inspection, which may be subjective and does not provide fully repeatable measurements.
+- **Performance measurements:** Response times were not recorded during the preliminary UI tests.
+- **Error-handling coverage:** Automated tests cover unknown concepts and invalid retrieval result counts, but the current test results do not establish how the application behaves during connection failures or other service errors.
+- **Verification coverage:** The current test cases do not establish how reliably the lesson verification mechanism detects mathematical errors.
 
 ## Future improvements
 
-- List planned feature enhancements, architectural refactorings, or future capabilities.
+- **Improve mathematical validation:** Add automated checks for common mathematical rules and worked examples, and expand tests to cover known correct and incorrect answers.
+- **Strengthen lesson verification:** Evaluate the verification mechanism against lessons containing known mathematical errors and measure whether it identifies them reliably.
+- **Improve retrieval quality:** Refine source selection and retrieval ranking so that beginner queries return simpler, more relevant explanations and numerical examples.
+- **Expand test coverage:** Add cases for empty inputs, ambiguous learning goals, unsupported topics, malformed model responses, and unavailable Ollama or Gemini services.
+- **Automate regression testing:** Turn repeatable evaluation cases into automated tests so that changes to prompts, retrieval, or generation can be checked consistently.
+- **Measure performance:** Record response times for lesson generation and retrieval to identify bottlenecks and evaluate the user experience.
+- **Improve multilingual support:** Test additional Finnish mathematical terms and alternative phrasings to assess how reliably the application recognizes learning goals across languages.
