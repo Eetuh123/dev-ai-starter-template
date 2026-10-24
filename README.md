@@ -12,13 +12,13 @@ Starter template for the **Development of AI Applications** course final group p
 
 <img width="1272" height="655" alt="image" src="https://github.com/user-attachments/assets/d2fd0ed7-1622-4496-9b8d-a0fd6205eb97" />
 
-Learning a difficult subject usually requires prior knowledge from several different areas. To learn X, you need to know Y and Z, and those have their own prerequisites. A teacher acts as an interface to that knowledge, but when teaching many students, each student has different knowledge gaps. To fill them, students have to search for information from different sources and teachers, which takes time and effort that could be spent on actually studying.
+Learning a difficult subject often requires prior knowledge from several different areas. To learn X, you may need to understand Y and Z, which can have their own prerequisites. Teachers help students navigate this knowledge, but every student has different strengths and knowledge gaps. When teaching many students, it is difficult to address everyone's individual needs. Students may therefore spend considerable time searching for suitable learning materials and explanations instead of focusing on studying.
 
-Our idea is an AI that you tell what you want to learn. It asks questions about closely related prerequisite knowledge to assess your level, then creates study material and quizzes for the knowledge you're missing. In the picture, red nodes are what you don't know and green nodes are what you know. The top node is your learning goal, which the gaps below it are preventing you from reaching.
+Our idea is an AI study assistant that lets users specify what they want to learn. It assesses their prerequisite knowledge through questions and generates study material and quizzes for topics they have not yet mastered. In the picture, red nodes represent knowledge gaps and green nodes represent known topics. The top node is the learning goal, and the gaps below it represent prerequisites that may prevent the learner from reaching that goal.
 
-We will start with logic-based subjects such as coding and math.
+We start with logic-based subjects such as mathematics and coding.
 
-**TL;DR:** An AI that creates study material for you based on your missing knowledge.
+**TL;DR**: An AI study assistant that creates learning material based on the user's missing prerequisite knowledge.
 
 ### Intended users
 
@@ -26,57 +26,50 @@ Students and anyone who wants to learn a new subject.
 
 ### Problem statement
 
-Difficult subjects require prior knowledge from many areas, and every student has different gaps. A teacher can't adapt to all of them, so students waste time searching for material and teachers instead of actually learning.
+Difficult subjects often require prior knowledge from multiple areas, and every learner has different knowledge gaps. It can be difficult for teachers to address all these individual needs, leaving students to spend time searching for suitable learning materials and explanations.
 
 ### Why AI is appropriate
 
-Traditional, deterministic software can't take a request like "I want to learn X," find relevant study material, and turn it into a personalized study plan and quizzes.
+A conventional rule-based system would struggle to interpret open-ended learning goals, generate explanations, and adapt the learning process to individual knowledge gaps. AI enables more flexible interaction and supports the generation of personalized study material and quizzes.
 
 ## Solution
 
-Our AI study assistant lets you focus on learning instead of searching for what to learn, where, from whom, and how. You tell it your goal, it finds your knowledge gaps, gathers study material, and turns it into a step-by-step plan with quizzes.
+Our AI study assistant helps users focus on learning instead of searching for what to learn, where to find information, and which prerequisites to study first. Users specify a learning goal, the application identifies relevant prerequisites and assesses their knowledge, then provides study material and quizzes for topics they need to improve.
 
 ## Architecture
 
-Below is the initial starter architecture. As your project evolves with additional capabilities, replace or extend this diagram in [`docs/architecture.md`](docs/architecture.md).
+The application uses a layered architecture in which the Gradio user interface communicates with the AI service layer in `src/services/ai_service.py`. The service coordinates the language model, RAG retrieval, assessments, learning progress, and lesson verification.
 
-```text
-User
-     ↓
-   Gradio UI (app/ui.py)
-     ↓
-   AI Service (src/services/ai_service.py)
-     ├─→ Retriever (RAG: source documents)
-     ├─→ Memory (user knowledge map + quiz results)
-     ├─→ Model Client → Ollama (local LLM, generates material)
-     └─→ Verification Client → External API (e.g. Claude, fact-check)
-```
+The main components are:
 
-> **Core Architectural Rule:** The user interface must NEVER communicate directly with the model client or Ollama. All interactions must pass through the service layer (`ai_service.py`).
+- **Gradio UI:** Collects learning goals, displays prerequisite topics and assessment tabs, and presents study material, quizzes, and progress.
+- **AI service:** Coordinates the application workflow and connects the user interface to the underlying capabilities.
+- **Ollama model client:** Communicates with the locally running language model used to generate responses and study material.
+- **RAG retriever:** Retrieves relevant textbook chunks from the Chroma vector database using embeddings from `intfloat/multilingual-e5-small`.
+- **Concept map:** Defines mathematics skills, prerequisite relationships, and relevant textbook modules.
+- **Learning progress:** Tracks assessment results and learning progress.
+- **Lesson verification:** Provides lesson review against retrieved source material using the Gemini API.
+
+The user interface should not communicate directly with the model client or Ollama. Application interactions should pass through the service layer.
+
+See [`docs/architecture.md`](docs/architecture.md) for the detailed architecture and component relationships.
 
 ## Model
 
-- Model used: llama3.2 (3B) via Ollama
-- Selection rationale: llama3.2 (3B) is the initial local baseline. Preliminary testing produced mathematical errors even with retrieved source material. A comparison of correctness, explanation clarity, and response time will be used to justify the final model selection.
+- Model used: qwen3.5:9b via Ollama
+- Selection rationale: qwen3.5:9b was selected because it achieved the highest correctness and clarity scores in our model comparison. Although it had the longest response time, the selection prioritizes the quality of educational content over speed.
 
 ## Additional AI capability
 
-Select at least one additional capability to implement for your final project:
-
-- [x] RAG (Retrieval-Augmented Generation)
-- [x] Tools / External API integration
-- [ ] Model Context Protocol (MCP)
-- [ ] Agentic workflow (Model-selected actions based on observations)
-- [x] Memory / Persistent state
-- [ ] Multimodal interaction (Text + Images)
-- [ ] Other: ______________________
+The project implements retrieval-augmented generation (RAG) to ground learning materials in relevant source documents, integrates an external AI service for lesson verification, and uses persistent memory to track users’ skills and learning progress.
 
 ### Capability justification
-RAG: A small local model can produce incorrect or made-up explanations, which is a serious problem in a study tool. With RAG, study material and quizzes are generated from retrieved source documents (e.g. course material or open textbooks) instead of the model's own memory, and every piece of material can show its source. This makes the content more reliable and checkable.
 
-Memory: The core idea of the app is to know what the user already knows and what they are missing. Persistent state stores the user's knowledge map (known and missing prerequisite topics) and quiz results between sessions, so the assistant does not have to re-test the user every time and can continue from their current gaps.
+RAG: Small local models can generate incorrect explanations. Retrieval-Augmented Generation (RAG) retrieves relevant sections from sources such as OpenStax mathematics textbooks to ground generated lessons and quizzes in reliable material. Showing sources also helps users check the content, although RAG does not guarantee correctness.
 
-Verification step (planned): A stronger external model could check generated lessons against the retrieved sources. This integration is not implemented in the current version. The verifier returns an unverified status and displays a notice that generated content may contain mathematical errors.
+Memory: The application tracks users’ knowledge and learning progress by saving quiz results and topic statuses. This persistent storage helps identify known and missing prerequisite topics and allows users to continue learning across sessions.
+
+Verification: The application includes an optional verification feature that checks generated lessons against retrieved sources. Users can trigger it with the Verify lesson button, and the application displays the result and any reported issues. Topic lessons are initially unverified, while a separate study-material flow verifies lessons automatically and can apply corrections. Verification can help identify errors but does not guarantee mathematical accuracy.
 
 ## Setup
 
@@ -109,7 +102,7 @@ copy .env.example .env
 Ensure `.env` contains valid values for `OLLAMA_BASE_URL` and `MODEL_NAME`:
 ```env
 OLLAMA_BASE_URL=http://localhost:11434
-MODEL_NAME=llama3.2
+MODEL_NAME=qwen3.5:9b
 ```
 
 ### 4. Start Ollama
@@ -117,7 +110,7 @@ MODEL_NAME=llama3.2
 Make sure Ollama is installed and running locally, then pull your configured model:
 
 ```bash
-ollama run llama3.2
+ollama run qwen3.5:9b
 ```
 
 ### 4a. Prepare the book data and RAG index (Windows)
@@ -150,16 +143,20 @@ Each repository folder must also contain its `modules` directory.
 The project uses three books: **College Algebra 2e**, **Precalculus 2e**, and **Calculus Volume 1**.
 
 #### Convert the books
-Install Conda-forge so we can install Pandoc
+
+Install Conda-forge package channel:
+
 ```bash
 conda install conda-forge::conda
 ```
+
 Install Pandoc using conda-forge in the active environment:
+
 ```bash
 conda install -c conda-forge pandoc
 ```
 
-Test if Pandoc was correctly installed
+Check that Pandoc is installed:
 
 ```bash
 pandoc --version
@@ -206,12 +203,15 @@ Output: `data/rag/chunks.jsonl`.
 Only modules referenced in the concept map are included in the RAG index.
 
 #### Build the Chroma index
-Download Chromadb using conda-forge:
+
+Download Chromadb using Conda-forge:
+
 ```bash
 conda install conda-forge::chromadb
 ```
 
-Ensure that SentenceTransformers downloaded, if not run:
+Ensure that SentenceTransformers downloaded. If not, run:
+
 ```bash
 conda install conda-forge::sentence-transformers
 ```
@@ -251,20 +251,26 @@ python -c "from src.capabilities.rag import retrieve; [print(c.book, c.section, 
 ```
 
 Retrieval works independently of Ollama. Generating study lessons requires Ollama and the configured language model.
+
 #### Verify lessons
-To verify lessons you need to download Google's Generative AI package
-Run:
+
+Lesson verification requires Google's Generative AI package. Install the package and python-dotenv if they are not already installed:
+
 ```bash
 conda install -c conda-forge google-genai python-dotenv
 ```
-And get your API Key from Google AI Studio
+
+Obtain an API key from Google AI Studio:
 https://aistudio.google.com/
 
-Paste this into .env, using your API Key:
+Add your API key and the supported Gemini model name used by your implementation to .env:
+
 ```env
 GEMINI_REVIEW_MODEL=gemini-3.8-flash
 GEMINI_API_KEY=YOUR_API_KEY
 ```
+
+Replace YOUR_API_KEY with your actual API key. Keep the key private and do not commit your .env file to Git.
 
 #### Files excluded from Git
 
@@ -281,20 +287,16 @@ Commit the scripts, `data/concepts.json`, dependency configuration, and document
 
 - Skill tags are assigned at module level, so retrieved chunks may cover a broader topic than the requested skill.
 - Images are represented by text descriptions, and some internal textbook references remain unresolved.
-- Fraction material mostly comes from a section on rational expressions and can be too advanced for beginners.
+- Fraction material can be too advanced for beginners.
 - Generated lessons may contain mathematical errors despite using retrieved sources.
-- Automatic content verification is not implemented. Lessons are displayed as unverified.
+- Verification has not been evaluated sufficiently to establish how reliably it detects mathematical errors.
 
 ### 5. Run the application
 
-Run the application from the root directory of the project:
+Run the application from the project root:
 
 ```bash
 python main.py
-```
-Or to use hot reaload run:
-```bash
-gradio main.py
 ```
 
 Then open your browser at `http://localhost:7860`.
@@ -307,17 +309,17 @@ pytest
 
 ## Evaluation
 
-The application was evaluated using nine test cases covering study material generation, retrieval-augmented generation (RAG), mathematical correctness, and error handling. The tests included preliminary manual UI testing, manual reviews of generated lessons, manual retrieval tests, and automated `pytest` tests.
+The application was evaluated using nine test cases covering study material generation, retrieval-augmented generation (RAG), mathematical correctness, and error handling. The tests included preliminary manual UI testing, manual reviews of generated lessons, manual retrieval tests, and automated pytest tests.
 
-Each test case included an expected behavior, an actual result, and a status of `pass`, `fail`, or `partial`. Of the nine test cases, six passed, two failed, and one partially passed.
+Each test case included an expected behavior, an actual result, and a status of pass, fail, or partial. Of the nine test cases, six passed, two failed, and one partially passed.
 
-The preliminary UI test demonstrated that the application could generate prerequisite study lessons, practice questions, and OpenStax source references using Llama 3.2. The retrieval tests also showed that the system could retrieve relevant Chain Rule material and recognize the Finnish term *ketjusääntö*. Automated tests confirmed that unknown concepts and invalid `top_k` values were rejected before the Chroma collection was accessed.
+The preliminary UI test demonstrated that the application could generate prerequisite study lessons, practice questions, and OpenStax source references using Llama 3.2. This was an earlier test and should not be interpreted as a test of the final selected model, qwen3.5:9b. The retrieval tests also showed that the system could retrieve relevant Chain Rule material and recognize the Finnish term ketjusääntö. Automated tests confirmed that unknown concepts and invalid top_k values were rejected before the Chroma collection was accessed.
 
 However, manual reviews identified mathematical errors in two generated lessons. The derivative rules lesson contained an incorrect differentiation example, while the functions lesson incorrectly used the area formula for a square to describe a triangle. The fraction retrieval test partially passed because, although some relevant material was returned, the first result was too advanced for a beginner.
 
-Overall, the evaluation showed that the main generation and retrieval functionality works in the tested cases, but generated mathematical content is not always reliable. The evaluation was limited to nine cases, and response times were not measured. The results should therefore be considered an initial assessment rather than a comprehensive measure of system reliability.
+Overall, the evaluation showed that the main generation and retrieval functionality worked in the tested cases, but generated mathematical content was not always reliable. The evaluation was limited to nine test cases, and response times were not measured during the preliminary UI tests. The results should therefore be considered an initial assessment rather than a comprehensive measure of system reliability.
 
-More in  [`evaluation/README.md`](evaluation/README.md).
+See [`evaluation/README.md`](evaluation/README.md) for more details.
 
 ## Known limitations
 
