@@ -1,6 +1,4 @@
-# Turbo super study helper tm
-
-Starter template for the **Development of AI Applications** course final group project.
+# Turbo super study helper ™
 
 ## Team members
 
